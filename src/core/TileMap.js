@@ -1,11 +1,14 @@
 import defaultTileset from 'data/defaultTileset';
 
 class TileMap {
-  constructor({ width = 500, height = 500, tileset = defaultTileset }) {
+  constructor({ width = 320, height = 100, tileset = defaultTileset } = {}) {
     this.width = width;
     this.height = height;
 
-    this.tiles = Array.fill(null, 0, width * height);
+    this.tiles = Array.from({ length: width * height });
+    for (let i = 0; i < (width * height); i++) {
+      this.tiles[i] = 0;
+    }
     this.tileset = tileset;
   }
 
@@ -17,7 +20,7 @@ class TileMap {
 
   setTile(x, y, tileIdx) {
     const idx = (y * this.width) + x;
-    if (idx >= this.tiles.length) {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
       throw new Error(`Tile (${x}, ${y}) is out of bounds`);
     }
     return this.tiles[idx] = tileIdx;
