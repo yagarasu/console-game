@@ -19,6 +19,13 @@ class TilemapViewport {
     return (lx >= 0 || lx < this.width || ly >= 0 || ly < this.height);
   }
 
+  centerTo(gx, gy) {
+    const lxc = this.width / 2;
+    const lyc = this.height / 2;
+    this.x = Math.round(gx - lxc);
+    this.y = Math.round(gy - lyc);
+  }
+
   getTile(lx, ly) {
     if (lx >= this.width || ly >= this.height) {
       return undefined;

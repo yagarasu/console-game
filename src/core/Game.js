@@ -13,7 +13,7 @@ const player = '\u263B';
 
 class Game {
   constructor() {
-    this.player = new Player(10, 10);
+    this.player = new Player(0, 0);
     this.scheduler = new Scheduler({ fps: FPS });
     this.scheduler.addJob(this.render.bind(this));
     this.scheduler.addJob(this.update.bind(this));
@@ -23,6 +23,10 @@ class Game {
     this.map = new TileMap();
     DungeonGenerator.digger(this.map);
     this.viewport = new TileMapViewport(this.map);
+    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(this.map);
+    console.log('>>',playerStartingX, playerStartingY );
+    this.player.fx = playerStartingX;
+    this.player.fy = playerStartingY;
 
     this.display = new Display({
       fontSize: 24
@@ -35,9 +39,9 @@ class Game {
   }
 
   update(delta, lag) {
-    this.moveViewport();
     this.movePlayer();
     this.player.move(delta, lag);
+    this.viewport.centerTo(this.player.x, this.player.y);
   }
 
   movePlayer() {
@@ -54,19 +58,6 @@ class Game {
       this.player.vx = this.player.maxVelocity;
     } else {
       this.player.vx = 0;
-    }
-  }
-
-  moveViewport() {
-    if (this.keyboard.isKeyPressed('w')) {
-      this.viewport.y--;
-    } else if (this.keyboard.isKeyPressed('s')) {
-      this.viewport.y++;
-    }
-    if (this.keyboard.isKeyPressed('a')) {
-      this.viewport.x--;
-    } else if (this.keyboard.isKeyPressed('d')) {
-      this.viewport.x++;
     }
   }
 
