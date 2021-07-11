@@ -4,6 +4,7 @@ import Keyboard from './Keyboard';
 import TileMap from './TileMap';
 import TileMapViewport from './TileMapViewport';
 import Player from 'entities/Player';
+import DungeonGenerator from 'core/DungeonGenerator';
 
 const FPS = 30;
 
@@ -20,8 +21,7 @@ class Game {
     this.keyboard = new Keyboard();
 
     this.map = new TileMap();
-    this.map.setTile(5,5,1);
-    this.map.setTile(15, 5, 2);
+    DungeonGenerator.digger(this.map);
     this.viewport = new TileMapViewport(this.map);
 
     this.display = new Display({

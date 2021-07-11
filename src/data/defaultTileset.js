@@ -5,9 +5,9 @@ export default {
     char: ','
   },
   1: {
-    fg: '#f00',
-    bg: '#060',
-    char: ','
+    fg: '#ccc',
+    bg: '#000',
+    char: '\u2588'
   },
   2: {
     fg: '#00f',
