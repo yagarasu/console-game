@@ -13,6 +13,7 @@ class TileMap {
   }
 
   getTile(x, y) {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
     const idx = (y * this.width) + x;
     const tileIdx = this.tiles[idx];
     return this.tileset[tileIdx];

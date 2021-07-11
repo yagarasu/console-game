@@ -1,27 +1,26 @@
 class Player {
   constructor(startingX, startingY) {
-    this.x = startingX;
-    this.y = startingY;
+    this.char = '\u263B';
+    this.color = '#f0f';
+    this.fx = startingX;
+    this.fy = startingY;
+    this.x = Math.round(this.fx);
+    this.y = Math.round(this.fy);
     this.vx = 0;
     this.vy = 0;
-    this.maxVelocity = 1;
+    this.maxVelocity = 0.25;
   }
 
   accelerate(x, y) {
-    this.vx += x;
-    this.vx = this.cap(this.vx, this.maxVelocity);
-    this.vy += y;
-    this.vy = this.cap(this.vy, this.maxVelocity);
+    this.vx = this.maxVelocity * x;
+    this.vy = this.maxVelocity * y;
   }
 
-  cap(val, max) {
-    return Math.abs(val) <= max ? val : val < 0 ? max * -1 : max;
-  }
-
-  move(delta) {
-    const lag = delta == 0 ? 1 : (1000/60) / delta;
-    this.x += Math.round(this.vx * lag);
-    this.y += Math.round(this.vy * lag);
+  move(delta, lag) {
+    this.fx += this.vx * lag;
+    this.fy += this.vy * lag;
+    this.x = Math.round(this.fx);
+    this.y = Math.round(this.fy);
   }
 }
 

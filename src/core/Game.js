@@ -5,13 +5,15 @@ import TileMap from './TileMap';
 import TileMapViewport from './TileMapViewport';
 import Player from 'entities/Player';
 
+const FPS = 30;
+
 const player = '\u263B';
 // const rune = '\u16AB';
 
 class Game {
   constructor() {
     this.player = new Player(10, 10);
-    this.scheduler = new Scheduler();
+    this.scheduler = new Scheduler({ fps: FPS });
     this.scheduler.addJob(this.render.bind(this));
     this.scheduler.addJob(this.update.bind(this));
 
@@ -19,6 +21,7 @@ class Game {
 
     this.map = new TileMap();
     this.map.setTile(5,5,1);
+    this.map.setTile(15, 5, 2);
     this.viewport = new TileMapViewport(this.map);
 
     this.display = new Display({
@@ -31,37 +34,56 @@ class Game {
     this.scheduler.start();
   }
 
-  update(delta) {
+  update(delta, lag) {
+    this.moveViewport();
     this.movePlayer();
-    this.player.move(delta);
+    this.player.move(delta, lag);
   }
 
   movePlayer() {
     if (this.keyboard.isKeyPressed('ArrowUp')) {
-      this.player.accelerate(0, -0.1);
+      this.player.vy = -this.player.maxVelocity;
     } else if (this.keyboard.isKeyPressed('ArrowDown')) {
-      this.player.accelerate(0, 0.1);
+      this.player.vy = this.player.maxVelocity;
     } else {
       this.player.vy = 0;
     }
     if (this.keyboard.isKeyPressed('ArrowLeft')) {
-      this.player.accelerate(-0.1, 0);
+      this.player.vx = -this.player.maxVelocity;
     } else if (this.keyboard.isKeyPressed('ArrowRight')) {
-      this.player.accelerate(0.1, 0);
+      this.player.vx = this.player.maxVelocity;
     } else {
       this.player.vx = 0;
     }
   }
 
-  render(delta) {
+  moveViewport() {
+    if (this.keyboard.isKeyPressed('w')) {
+      this.viewport.y--;
+    } else if (this.keyboard.isKeyPressed('s')) {
+      this.viewport.y++;
+    }
+    if (this.keyboard.isKeyPressed('a')) {
+      this.viewport.x--;
+    } else if (this.keyboard.isKeyPressed('d')) {
+      this.viewport.x++;
+    }
+  }
+
+  render(delta, lag) {
     this.display.clear();
     this.drawTileMap();
     this.drawPlayer();
-    this.display.drawText(0,24,`(${this.player.x}, ${this.player.y}) -> ${this.player.vx}, ${this.player.vy} || delta ${Math.round((1000/60) / delta)}`);
+    this.display.drawText(0,24,`(${this.player.x}, ${this.player.y}) -> ${this.player.vx}, ${this.player.vy} || delta ${delta.toFixed(3)} || lag ${lag.toFixed(3)}`);
   }
 
   drawPlayer() {
-    this.display.draw(this.player.x, this.player.y, player);
+    if (this.viewport.globalIsVisible(this.player.x, this.player.y)) {
+      const [lx, ly] = this.viewport.transformGlobalToLocal(this.player.x, this.player.y);
+      const tile = this.viewport.getTile(lx, ly);
+      const bg = tile ? tile.bg : null;
+      this.display.draw(lx, ly, this.player.char, this.player.color, bg);
+    }
   }
 
   drawTileMap() {

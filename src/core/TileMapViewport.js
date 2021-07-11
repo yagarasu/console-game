@@ -7,6 +7,18 @@ class TilemapViewport {
     this.height = height;
   }
 
+  transformGlobalToLocal(gx, gy) {
+    return [
+      gx - this.x,
+      gy - this.y
+    ];
+  }
+
+  globalIsVisible(gx, gy) {
+    const [lx, ly] = this.transformGlobalToLocal(gx, gy);
+    return (lx >= 0 || lx < this.width || ly >= 0 || ly < this.height);
+  }
+
   getTile(lx, ly) {
     if (lx >= this.width || ly >= this.height) {
       return undefined;

@@ -1,5 +1,7 @@
 class Scheduler {
-  constructor() {
+  constructor({ fps = 30 } = {}) {
+    this.fps = fps;
+    this.frameDuration = (1 / this.fps) * 1000;
     this.lastTs = null;
     this.timer = null;
     this.tick = this.tick.bind(this);
@@ -22,8 +24,9 @@ class Scheduler {
     if (!this.lastTs) this.lastTs = ts;
     const delta = ts - this.lastTs;
     this.lastTs = ts;
+    const lag = delta / this.frameDuration;
     this.jobs.forEach((job) => {
-      job(delta);
+      job(delta, lag);
     });
     this.timer = requestAnimationFrame(this.tick);
   }
