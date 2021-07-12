@@ -5,6 +5,7 @@ import TileMap from './TileMap';
 import TileMapViewport from './TileMapViewport';
 import Player from 'entities/Player';
 import DungeonGenerator from 'core/DungeonGenerator';
+import CollisionResolver from 'core/CollisionResolver';
 
 const FPS = 30;
 
@@ -24,7 +25,6 @@ class Game {
     DungeonGenerator.digger(this.map);
     this.viewport = new TileMapViewport(this.map);
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(this.map);
-    console.log('>>',playerStartingX, playerStartingY );
     this.player.fx = playerStartingX;
     this.player.fy = playerStartingY;
 
@@ -40,7 +40,7 @@ class Game {
 
   update(delta, lag) {
     this.movePlayer();
-    this.player.move(delta, lag);
+    CollisionResolver.resolveTileMapCollisionAndMoveEntity(this.player, this.map, delta, lag);
     this.viewport.centerTo(this.player.x, this.player.y);
   }
 

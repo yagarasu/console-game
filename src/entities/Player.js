@@ -16,9 +16,16 @@ class Player {
     this.vy = this.maxVelocity * y;
   }
 
-  move(delta, lag) {
-    this.fx += this.vx * lag;
-    this.fy += this.vy * lag;
+  attemptMove(delta, lag) {
+    return [
+      this.fx + (this.vx * lag),
+      this.fy + (this.vy * lag)
+    ];
+  }
+
+  move(fx, fy) {
+    this.fx = fx;
+    this.fy = fy;
     this.x = Math.round(this.fx);
     this.y = Math.round(this.fy);
   }
