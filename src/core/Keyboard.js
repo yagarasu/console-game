@@ -1,10 +1,26 @@
 class Keyboard {
   constructor() {
     this.keys = [];
-    this.onKeyDown = this.onKeyDown.bind(this);
-    this.onKeyUp = this.onKeyUp.bind(this);
-    document.addEventListener('keydown', this.onKeyDown);
-    document.addEventListener('keyup', this.onKeyUp);
+    this.subscribers = [];
+    document.addEventListener('keydown', this.onKeyDown.bind(this));
+    document.addEventListener('keyup', this.onKeyUp.bind(this));
+    document.addEventListener('keypress', this.onKeyPress.bind(this));
+  }
+
+  subscribeTo(key, callback) {
+    this.subscribers.push({
+      key,
+      callback
+    });
+  }
+
+  onKeyPress(e) {
+    const subs = this.subscribers.filter(({ key }) => key === e.key);
+    if (subs.length > 0) {
+      subs.forEach(({ callback }) => {
+        callback();
+      })
+    }
   }
 
   onKeyDown(e) {

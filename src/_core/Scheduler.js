@@ -5,21 +5,11 @@ class Scheduler {
     this.lastTs = null;
     this.timer = null;
     this.tick = this.tick.bind(this);
-    this.lastTaskId = -1;
-    this.tasks = [];
+    this.jobs = [];
   }
 
-  addTask(task) {
-    const newTaskId = this.lastTaskId++;
-    this.tasks.push({
-      id: newTaskId,
-      task
-    });
-    return newTaskId;
-  }
-
-  removeTask(taskId) {
-    this.tasks = this.tasks.filter(({ id }) => id !== taskId);
+  addJob(fn) {
+    this.jobs.push(fn);
   }
 
   start() {
@@ -28,16 +18,15 @@ class Scheduler {
 
   stop() {
     cancelAnimationFrame(this.timer);
-    this.timer = null;
   }
 
   tick(ts) {
-    if (!this.lastTs) this.lastTs = performance.now();
+    if (!this.lastTs) this.lastTs = ts;
     const delta = ts - this.lastTs;
     this.lastTs = ts;
-    const progress = delta / this.frameDuration;
-    this.tasks.forEach(({ task }) => {
-      task(delta, progress);
+    const lag = delta / this.frameDuration;
+    this.jobs.forEach((job) => {
+      job(delta, lag);
     });
     this.timer = requestAnimationFrame(this.tick);
   }
