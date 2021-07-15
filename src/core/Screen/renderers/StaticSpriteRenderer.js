@@ -1,11 +1,13 @@
 class StaticSpriteRendered {
-  static render({ entityManager }, display) {
-    const entities = entityManager.filterByAllComponentName(['position', 'staticSprite']);
-    entities.forEach(entity => {
-      const { x, y } = entity.position;
-      const { ch, fg, bg } = entity.staticSprite;
-      display.draw(x, y, ch, fg, bg);
-    });
+  static render({ entityManager, display, camera }) {
+    const entities = entityManager.filterByAllComponentName(['position', 'staticSprite'])
+      .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
+      .forEach(entity => {
+        const { x, y } = entity.position;
+        const { ch, fg, bg } = entity.staticSprite;
+        const [lx, ly] = camera.transformGlobalToLocal(x, y);
+        display.draw(lx, ly, ch, fg, bg);
+      });
   }
 }
 

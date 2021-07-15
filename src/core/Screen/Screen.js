@@ -1,5 +1,6 @@
 import { Display } from 'rot-js';
 import config from 'data/config';
+import Camera from './Camera';
 import AnimatedSpriteRenderer from './renderers/AnimatedSpriteRenderer';
 import StaticSpriteRenderer from './renderers/StaticSpriteRenderer';
 import TileMapRenderer from './renderers/TileMapRenderer';
@@ -15,11 +16,16 @@ class Screen {
       entityManager: null,
     };
 
+    this.camera = null;
+
     this.tasks = [];
   }
   
   initialize(entityManager, mapManager) {
     document.body.appendChild(this.display.getContainer());
+    
+    const { width, height } = this.display.getOptions();
+    this.camera = new Camera(this, { width, height });
     this.managers.entityManager = entityManager;
     this.managers.mapManager = mapManager;
 
@@ -39,7 +45,11 @@ class Screen {
   render(delta, progress) {
     this.display.clear();
     this.tasks.forEach((task) => {
-      task.render(this.managers, this.display, delta, progress);
+      task.render({
+        ...this.managers,
+        camera: this.camera,
+        display: this.display,
+      }, delta, progress);
     });
   }
 }

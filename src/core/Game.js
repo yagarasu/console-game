@@ -30,16 +30,19 @@ class Game {
   initialize() {
     this.screen.initialize(this.entityManager, this.mapManager);
 
+    // Initialize map
     const map = new TileMap();
     map.tileset = defaultTileset;
     DungeonGenerator.digger(map);
     this.mapManager.setMap(map);
 
+    // Initialize player
     this.entityManager.createEntity('player', createPlayer());
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(map);
     this.entityManager.updateComponent('player', 'position', { x: playerStartingX, y: playerStartingY });
     this.entityManager.addTags('player', ['followWithCamera']);
     
+    // Tasks
     this.tasks.update = this.scheduler.addTask(
       this.update.bind(this)
     );
