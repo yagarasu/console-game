@@ -15,7 +15,6 @@ import PlayerController from 'controllers/PlayerController';
 
 class Game {
   constructor() {
-    this.screen = new Screen();
     this.keyboard = new Keyboard();
     this.keybinder = new KeyBinder(config.keymap);
     this.scheduler = new Scheduler();
@@ -24,6 +23,7 @@ class Game {
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
     this.collisionResolver = new CollisionResolver(this.entityManager, this.mapManager);
+    this.screen = new Screen(this.entityManager, this.mapManager);
 
     this.tasks = {
       update: null,
@@ -41,7 +41,7 @@ class Game {
   }
   
   initialize() {
-    this.screen.initialize(this.entityManager, this.mapManager);
+    this.screen.initialize();
 
     // Input
     this.keybinder.subscribeToBindings(this.keyboard, this.inputQueue);
