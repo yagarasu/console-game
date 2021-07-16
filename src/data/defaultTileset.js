@@ -1,5 +1,6 @@
 export default {
   0: {
+    name: 'Void',
     fg: '#ccc',
     bg: '#333',
     char: '·',
@@ -9,6 +10,7 @@ export default {
     ]
   },
   1: {
+    name: 'Normal',
     fg: '#ccc',
     bg: '#000',
     char: '\u2588',

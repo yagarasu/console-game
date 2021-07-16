@@ -1,88 +1,80 @@
-import { Display } from 'rot-js';
-import Scheduler from './Scheduler';
-import Keyboard from './Keyboard';
-import TileMap from './TileMap';
-import TileMapViewport from './TileMapViewport';
-import Player from 'entities/Player';
-import DungeonGenerator from 'core/DungeonGenerator';
-import CollisionResolver from 'core/CollisionResolver';
-
-const FPS = 30;
-
-const player = '\u263B';
-// const rune = '\u16AB';
+import Screen from 'core/Screen';
+import Keyboard from 'core/Keyboard';
+import KeyBinder from 'core/Keyboard/KeyBinder';
+import Scheduler from 'core/Scheduler';
+import EventQueue from 'core/EventQueue';
+import EntityManager from 'core/EntityManager';
+import MapManager from 'core/Map/MapManager';
+import TileMap from 'core/Map/TileMap';
+import DungeonGenerator from 'core/Map/DungeonGenerator';
+import { createPlayer } from 'entities/entityFactories';
+import defaultTileset from 'data/defaultTileset';
+import config from 'data/config';
+import PlayerController from 'controllers/PlayerController';
 
 class Game {
   constructor() {
-    this.player = new Player(0, 0);
-    this.scheduler = new Scheduler({ fps: FPS });
-    this.scheduler.addJob(this.render.bind(this));
-    this.scheduler.addJob(this.update.bind(this));
-
+    this.screen = new Screen();
     this.keyboard = new Keyboard();
+    this.keybinder = new KeyBinder(config.keymap);
+    this.scheduler = new Scheduler();
+    this.inputQueue = new EventQueue();
+    this.eventQueue = new EventQueue();
+    this.entityManager = new EntityManager();
+    this.mapManager = new MapManager();
 
-    this.map = new TileMap();
-    DungeonGenerator.digger(this.map);
-    this.viewport = new TileMapViewport(this.map);
-    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(this.map);
-    this.player.fx = playerStartingX;
-    this.player.fy = playerStartingY;
+    this.tasks = {
+      update: null,
+      render: null,
+    };
 
-    this.display = new Display({
-      fontSize: 24
-    });
-    document.body.appendChild(this.display.getContainer());
+    this.controllers = {
+      player: new PlayerController(this.entityManager),
+    };
   }
 
-  start() {
+  run() {
+    this.initialize();
     this.scheduler.start();
   }
+  
+  initialize() {
+    this.screen.initialize(this.entityManager, this.mapManager);
 
-  update(delta, lag) {
-    this.movePlayer();
-    CollisionResolver.resolveTileMapCollisionAndMoveEntity(this.player, this.map, delta, lag);
-    this.viewport.centerTo(this.player.x, this.player.y);
-  }
+    // Input
+    this.keybinder.subscribeToBindings(this.keyboard, this.inputQueue);
+    this.inputQueue.addConsumer(this.controllers.player.consumer.bind(this.controllers.player));
 
-  movePlayer() {
-    if (this.keyboard.isKeyPressed('ArrowUp')) {
-      this.player.vy = -this.player.maxVelocity;
-    } else if (this.keyboard.isKeyPressed('ArrowDown')) {
-      this.player.vy = this.player.maxVelocity;
-    } else {
-      this.player.vy = 0;
-    }
-    if (this.keyboard.isKeyPressed('ArrowLeft')) {
-      this.player.vx = -this.player.maxVelocity;
-    } else if (this.keyboard.isKeyPressed('ArrowRight')) {
-      this.player.vx = this.player.maxVelocity;
-    } else {
-      this.player.vx = 0;
-    }
-  }
+    // Initialize map
+    const map = new TileMap();
+    map.tileset = defaultTileset;
+    DungeonGenerator.digger(map);
+    this.mapManager.setMap(map);
 
-  render(delta, lag) {
-    this.display.clear();
-    this.drawTileMap();
-    this.drawPlayer();
-    this.display.drawText(0,24,`(${this.player.x}, ${this.player.y}) -> ${this.player.vx}, ${this.player.vy} || delta ${delta.toFixed(3)} || lag ${lag.toFixed(3)}`);
-  }
-
-  drawPlayer() {
-    if (this.viewport.globalIsVisible(this.player.x, this.player.y)) {
-      const [lx, ly] = this.viewport.transformGlobalToLocal(this.player.x, this.player.y);
-      const tile = this.viewport.getTile(lx, ly);
-      const bg = tile ? tile.bg : null;
-      this.display.draw(lx, ly, this.player.char, this.player.color, bg);
-    }
-  }
-
-  drawTileMap() {
-    this.viewport.forEach((lx, ly, gx, gy, tile) => {
-      if (!tile) return;
-      const { fg, bg, char } = tile;
-      this.display.draw(lx, ly, char, fg, bg);
+    // Initialize player
+    this.entityManager.createEntity('player', createPlayer());
+    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(map);
+    this.entityManager.updateComponent('player', 'position', { x: playerStartingX, y: playerStartingY });
+    this.entityManager.addTags('player', ['followWithCamera']);
+    
+    // Tasks
+    this.tasks.update = this.scheduler.addTask(
+      this.update.bind(this)
+    );
+    this.tasks.render = this.scheduler.addTask(
+      this.screen.render.bind(this.screen)
+    );
+    // Debug
+    this.scheduler.addTask(() => {
+      this.screen.display.draw(40,0,this.keyboard.keys.join(','));
     });
+
+    // ...
+  }
+
+  update(delta, progress) {
+    this.inputQueue.consume({ delta, progress });
+    this.eventQueue.consume({ delta, progress });
   }
 }
 
