@@ -5,6 +5,7 @@ import Scheduler from 'core/Scheduler';
 import EventQueue from 'core/EventQueue';
 import EntityManager from 'core/EntityManager';
 import MapManager from 'core/Map/MapManager';
+import CollisionResolver from 'core/CollisionResolver';
 import TileMap from 'core/Map/TileMap';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
 import { createPlayer } from 'entities/entityFactories';
@@ -22,6 +23,7 @@ class Game {
     this.eventQueue = new EventQueue();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
+    this.collisionResolver = new CollisionResolver(this.entityManager, this.mapManager);
 
     this.tasks = {
       update: null,
@@ -75,6 +77,7 @@ class Game {
   update(delta, progress) {
     this.inputQueue.consume({ delta, progress });
     this.eventQueue.consume({ delta, progress });
+    this.collisionResolver.update(delta, progress);
   }
 }
 

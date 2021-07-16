@@ -1,6 +1,6 @@
 export function createPlayer(x = 0, y = 0) {
   return {
-    position: { x, y },
+    position: { x, y, px: x, py: y },
     stats: {
       health: 100,
       mana: 100
