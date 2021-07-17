@@ -5,17 +5,25 @@ class PlayerController {
 
   hndIntent(intent) {
     const player = this.em.getEntity('player');
+    const { position } = player;
+    const newPosition = { ...position };
+    newPosition.prevY = position.y;
+    newPosition.prevX = position.x;
     switch (intent.type) {
       case 'MOVE_UP':
-        return player.position.y--;
+        newPosition.y--;
+        break;
       case 'MOVE_DOWN':
-        return player.position.y++;
+        newPosition.y++;
+        break;
       case 'MOVE_LEFT':
-        return player.position.x--;
+        newPosition.x--;
+        break;
       case 'MOVE_RIGHT':
-        return player.position.x++;
-      default:
+        newPosition.x++;
+        break;
     }
+    this.em.updateComponent('player', 'position', newPosition);
   }
 
   consumer(context) {

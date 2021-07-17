@@ -1,5 +1,6 @@
 class StaticSpriteRendered {
-  static render({ entityManager, display, camera }) {
+  static render({ entityManager, mapManager, display, camera }) {
+    const map = mapManager.getMap();
     const entities = entityManager.filterByAllComponentName(['position', 'animatedSprite'])
       .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
       .forEach(entity => {
@@ -7,7 +8,8 @@ class StaticSpriteRendered {
         const [lx, ly] = camera.transformGlobalToLocal(x, y);
         const { currentFrame, frames, tickCount } = entity.animatedSprite;
         const { ch, fg, bg, duration = 1 } = frames[currentFrame];
-        display.draw(lx, ly, ch, fg, bg);
+        const tileBg = map.getTile(x, y)?.bg;
+        display.draw(lx, ly, ch, fg, bg ?? tileBg);
         const nextState = {
           currentFrame,
           tickCount

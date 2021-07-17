@@ -6,28 +6,26 @@ import StaticSpriteRenderer from './renderers/StaticSpriteRenderer';
 import TileMapRenderer from './renderers/TileMapRenderer';
 
 class Screen {
-  constructor() {
+  constructor(entityManager, mapManager) {
     this.display = new Display({
       fontSize: config.screen.fontSize,
     });
 
     this.managers = {
-      mapManager: null,
-      entityManager: null,
+      entityManager,
+      mapManager,
     };
 
     this.camera = null;
 
     this.tasks = [];
   }
-  
-  initialize(entityManager, mapManager) {
+
+  initialize() {
     document.body.appendChild(this.display.getContainer());
-    
+
     const { width, height } = this.display.getOptions();
     this.camera = new Camera(this, { width, height });
-    this.managers.entityManager = entityManager;
-    this.managers.mapManager = mapManager;
 
     this.addTask(TileMapRenderer);
     this.addTask(AnimatedSpriteRenderer);
