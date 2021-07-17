@@ -1,6 +1,7 @@
 class PlayerController {
-  constructor(entityManager) {
-    this.em = entityManager
+  constructor(entityManager, mapManager) {
+    this.em = entityManager;
+    this.mm = mapManager;
   }
 
   hndIntent(intent) {
@@ -23,6 +24,9 @@ class PlayerController {
         newPosition.x++;
         break;
     }
+    const tile = this.mm.getMap().getTile(newPosition.x, newPosition.y);
+    const isSolid = !tile || tile.solid;
+    if (isSolid) return;
     this.em.updateComponent('player', 'position', newPosition);
   }
 

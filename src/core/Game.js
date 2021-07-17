@@ -32,7 +32,7 @@ class Game {
     };
 
     this.controllers = {
-      player: new PlayerController(this.entityManager),
+      player: new PlayerController(this.entityManager, this.mapManager),
       mob: new MobController(this.entityManager, this.mapManager),
     };
   }
