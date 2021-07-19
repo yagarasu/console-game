@@ -7,7 +7,7 @@ class StaticSpriteRendered {
         const { x, y } = entity.position;
         const { ch, fg, bg } = entity.staticSprite;
         const [lx, ly] = camera.transformGlobalToLocal(x, y);
-        const { bg: tileBg } = map.getTile(x, y);
+        const { bg: tileBg } = map.getTile(x, y) ?? {};
         display.draw(lx, ly, ch, fg, bg ?? tileBg);
       });
   }

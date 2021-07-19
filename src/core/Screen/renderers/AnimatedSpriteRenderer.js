@@ -8,7 +8,7 @@ class StaticSpriteRendered {
         const [lx, ly] = camera.transformGlobalToLocal(x, y);
         const { currentFrame, frames, tickCount } = entity.animatedSprite;
         const { ch, fg, bg, duration = 1 } = frames[currentFrame];
-        const { bg: tileBg } = map.getTile(x, y);
+        const { bg: tileBg } = map.getTile(x, y) ?? {};
         display.draw(lx, ly, ch, fg, bg ?? tileBg);
         const nextState = {
           currentFrame,

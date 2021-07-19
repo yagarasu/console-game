@@ -75,9 +75,11 @@ class Game {
   }
 
   update(delta, progress) {
+    this.entityManager.startTransaction();
     this.inputQueue.consume({ delta, progress });
     this.eventQueue.consume({ delta, progress });
     this.collisionResolver.update(delta, progress);
+    this.entityManager.commit();
   }
 }
 
