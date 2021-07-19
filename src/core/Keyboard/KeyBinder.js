@@ -1,3 +1,5 @@
+import { throttle } from 'core/utils';
+
 class KeyBinder {
   constructor(keymap = {}) {
     this.bindings = Object.keys(keymap)

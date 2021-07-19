@@ -20,10 +20,10 @@ class Screen {
 
     this.tasks = [];
   }
-  
+
   initialize() {
     document.body.appendChild(this.display.getContainer());
-    
+
     const { width, height } = this.display.getOptions();
     this.camera = new Camera(this, { width, height });
 

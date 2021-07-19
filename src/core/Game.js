@@ -8,10 +8,12 @@ import MapManager from 'core/Map/MapManager';
 import CollisionResolver from 'core/CollisionResolver';
 import TileMap from 'core/Map/TileMap';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
-import { createPlayer } from 'entities/entityFactories';
+import { createPlayer, createMob } from 'entities/entityFactories';
 import defaultTileset from 'data/defaultTileset';
 import config from 'data/config';
 import PlayerController from 'controllers/PlayerController';
+import MobController from 'controllers/MobController';
+import CollisionResolver from 'core/CollisionResolver';
 
 class Game {
   constructor() {
@@ -31,7 +33,8 @@ class Game {
     };
 
     this.controllers = {
-      player: new PlayerController(this.entityManager),
+      player: new PlayerController(this.entityManager, this.mapManager),
+      mob: new MobController(this.entityManager, this.mapManager),
     };
   }
 
@@ -39,7 +42,7 @@ class Game {
     this.initialize();
     this.scheduler.start();
   }
-  
+
   initialize() {
     this.screen.initialize();
 
@@ -58,7 +61,16 @@ class Game {
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(map);
     this.entityManager.updateComponent('player', 'position', { x: playerStartingX, y: playerStartingY });
     this.entityManager.addTags('player', ['followWithCamera']);
-    
+
+    // Initialize mobs
+    for (let i = 0; i < 50; i++) {
+      const id = `mob-${i}`;
+      this.entityManager.createEntity(id, createMob());
+      const [sx, sy] = DungeonGenerator.randomStartingPosition(map);
+      this.entityManager.updateComponent(id, 'position', { x: sx, y: sy });
+      this.entityManager.addTags(id, ['aiControlled']);
+    }
+
     // Tasks
     this.tasks.update = this.scheduler.addTask(
       this.update.bind(this)
@@ -68,7 +80,7 @@ class Game {
     );
     // Debug
     this.scheduler.addTask(() => {
-      this.screen.display.draw(40,0,this.keyboard.keys.join(','));
+      this.screen.display.draw(40,0,`(${this.entityManager.entities['mob-0'].position.x},${this.entityManager.entities['mob-0'].position.y})`);
     });
 
     // ...
@@ -77,6 +89,8 @@ class Game {
   update(delta, progress) {
     this.entityManager.startTransaction();
     this.inputQueue.consume({ delta, progress });
+    this.controllers.mob.update();
+    this.collisionResolver.resolveEntityVsTiles();
     this.eventQueue.consume({ delta, progress });
     this.collisionResolver.update(delta, progress);
     this.entityManager.commit();

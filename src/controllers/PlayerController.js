@@ -1,34 +1,33 @@
 class PlayerController {
-  constructor(entityManager) {
-    this.em = entityManager
+  constructor(entityManager, mapManager) {
+    this.em = entityManager;
+    this.mm = mapManager;
   }
 
   hndIntent(intent) {
     const player = this.em.getEntity('player');
-    const { position } = player
-    position.px = position.x;
-    position.py = position.y;
+    const { position } = player;
+    const newPosition = { ...position };
+    newPosition.prevY = position.y;
+    newPosition.prevX = position.x;
     switch (intent.type) {
       case 'MOVE_UP':
-        position.y--;
+        newPosition.y--;
         break;
       case 'MOVE_DOWN':
-        position.y++;
+        newPosition.y++;
         break;
       case 'MOVE_LEFT':
-        position.x--;
+        newPosition.x--;
         break;
       case 'MOVE_RIGHT':
-        position.x++;
+        newPosition.x++;
         break;
-      default:
     }
-    this.em.updateComponent('player', 'position', {
-      x: position.x,
-      y: position.y,
-      px: position.px,
-      px: position.px,
-    });
+    const tile = this.mm.getMap().getTile(newPosition.x, newPosition.y);
+    const isSolid = !tile || tile.solid;
+    if (isSolid) return;
+    this.em.updateComponent('player', 'position', newPosition);
   }
 
   consumer(context) {

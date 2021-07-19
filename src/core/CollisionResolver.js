@@ -4,19 +4,14 @@ class CollisionResolver {
     this.mapManager = mapManager;
   }
 
-  update() {
-    this.resolveEntityVsMap();
-  }
-
-  resolveEntityVsMap() {
-    const map = this.mapManager.getMap();
+  resolveEntityVsTiles() {
     this.entityManager.filterByAllComponentName(['position'])
-      .forEach(entity => {
-        const { x, y, px, py } = entity.position;
-        const tile = map.getTile(x, y);
-        if (!tile || tile.solid) {
-          this.entityManager.updateComponent(entity.id, 'position', { x: px, y: py });
-        }
+      .forEach((entity) => {
+        const { position: { x, y, prevX, prevY } } = entity;
+        const tile = this.mapManager.getMap().getTile(x, y);
+        const isSolid = !tile || tile.solid;
+        if (!isSolid) return;
+        this.entityManager.updateComponent(entity.id, 'position', { x: prevX, y: prevY });
       });
   }
 }
