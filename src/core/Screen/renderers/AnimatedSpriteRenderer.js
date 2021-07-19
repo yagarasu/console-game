@@ -1,7 +1,7 @@
 class StaticSpriteRendered {
   static render({ entityManager, mapManager, display, camera }) {
     const map = mapManager.getMap();
-    const entities = entityManager.filterByAllComponentName(['position', 'animatedSprite'])
+    entityManager.filterByAllComponentName(['position', 'animatedSprite'])
       .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
       .forEach(entity => {
         const { x, y } = entity.position;

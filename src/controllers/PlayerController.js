@@ -1,11 +1,12 @@
+import { throttle } from 'core/utils';
+
 class PlayerController {
-  constructor(entityManager, mapManager) {
-    this.em = entityManager;
-    this.mm = mapManager;
+  constructor(game) {
+    this.game = game;
   }
 
   hndIntent(intent) {
-    const player = this.em.getEntity('player');
+    const player = this.game.entityManager.getEntity('player');
     const { position } = player;
     const newPosition = { ...position };
     newPosition.prevY = position.y;
@@ -24,13 +25,13 @@ class PlayerController {
         newPosition.x++;
         break;
     }
-    const tile = this.mm.getMap().getTile(newPosition.x, newPosition.y);
+    const tile = this.game.mapManager.getMap().getTile(newPosition.x, newPosition.y);
     const isSolid = !tile || tile.solid;
     if (isSolid) return;
-    this.em.updateComponent('player', 'position', newPosition);
+    this.game.entityManager.updateComponent('player', 'position', newPosition);
   }
 
-  consumer(context) {
+  consumer() {
     return next => intent => {
       if (intent.target !== 'player') {
         return next();
@@ -38,6 +39,31 @@ class PlayerController {
       this.hndIntent(intent);
       return next();
     }
+  }
+
+  events() {
+    return next => event => {
+      const { target } = event;
+      if (event.type == 'collision' && target.id == 'player') {
+        if (this.game.entityManager.entityIsTaggedWith(target.id, 'invulnerable')) {
+          console.log('invul');
+          return;
+        }
+        console.log('hit');
+        const { stats: { health } } = target;
+        const newHealth = health - 10;
+        if (newHealth < 0) {
+          this.game.entityManager.updateComponent('player', 'stats', { health: 0 });
+          this.game.eventQueue.enqueue({ type: 'death', target });
+          return next();
+        }
+        this.game.entityManager.updateComponent('player', 'stats', { health: event.target.stats.health - 10 });
+        this.game.entityManager.addTags('player', ['invulnerable']);
+        // this.game.scheduler.scheduleOneTimeTask(() => {
+        //   this.game.entityManager.removeTags('player', ['invulnerable']);
+        // }, 120);
+      }
+    };
   }
 }
 

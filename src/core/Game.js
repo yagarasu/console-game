@@ -13,7 +13,6 @@ import defaultTileset from 'data/defaultTileset';
 import config from 'data/config';
 import PlayerController from 'controllers/PlayerController';
 import MobController from 'controllers/MobController';
-import CollisionResolver from 'core/CollisionResolver';
 
 class Game {
   constructor() {
@@ -24,7 +23,7 @@ class Game {
     this.eventQueue = new EventQueue();
     this.entityManager = new EntityManager();
     this.mapManager = new MapManager();
-    this.collisionResolver = new CollisionResolver(this.entityManager, this.mapManager);
+    this.collisionResolver = new CollisionResolver(this.entityManager, this.mapManager, this.eventQueue);
     this.screen = new Screen(this.entityManager, this.mapManager);
 
     this.tasks = {
@@ -33,7 +32,7 @@ class Game {
     };
 
     this.controllers = {
-      player: new PlayerController(this.entityManager, this.mapManager),
+      player: new PlayerController(this),
       mob: new MobController(this.entityManager, this.mapManager),
     };
   }
@@ -61,6 +60,7 @@ class Game {
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(map);
     this.entityManager.updateComponent('player', 'position', { x: playerStartingX, y: playerStartingY });
     this.entityManager.addTags('player', ['followWithCamera']);
+    this.eventQueue.addConsumer(this.controllers.player.events.bind(this.controllers.player));
 
     // Initialize mobs
     for (let i = 0; i < 50; i++) {
@@ -90,9 +90,8 @@ class Game {
     this.entityManager.startTransaction();
     this.inputQueue.consume({ delta, progress });
     this.controllers.mob.update();
-    this.collisionResolver.resolveEntityVsTiles();
-    this.eventQueue.consume({ delta, progress });
     this.collisionResolver.update(delta, progress);
+    this.eventQueue.consume({ delta, progress });
     this.entityManager.commit();
   }
 }

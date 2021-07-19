@@ -98,10 +98,20 @@ class EntityManager {
     });
   }
 
+  removeTags(id, tags) {
+    const $this = this._getDataRoot();
+    if (!$this.entities[id]) throw new Error(`Entity id ${id} does not exist.`);
+    tags.forEach((tag) => {
+      if ($this.tags[tag]) {
+        $this.tags[tag] = $this.tags[tag].filter(tagId => tagId !== id);
+      }
+    });
+  }
+
   entityIsTaggedWith(id, tag) {
     const $this = this._getDataRoot();
-    if (!$this.tags[id]) throw new Error(`Entity id ${id} does not exist.`);
-    return $this.tags[id].includes(tag);
+    if (!$this.tags[tag]) return false;
+    return $this.tags[tag].includes(tag);
   }
 
   filterByAnyComponentName(componentNames) {

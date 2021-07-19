@@ -7,6 +7,7 @@ class Scheduler {
     this.tick = this.tick.bind(this);
     this.lastTaskId = -1;
     this.tasks = [];
+    this.scheduledTasks = [];
   }
 
   addTask(task) {
@@ -20,6 +21,19 @@ class Scheduler {
 
   removeTask(taskId) {
     this.tasks = this.tasks.filter(({ id }) => id !== taskId);
+  }
+
+  removeScheduledTask(taskId) {
+    this.scheduledTasks = this.scheduledTasks.filter(({ id }) => id !== taskId);
+  }
+
+  scheduleOneTimeTask(task, ticksAhead) {
+    const newTaskId = this.lastTaskId++;
+    this.scheduledTasks.push({
+      id: newTaskId,
+      task,
+      ticksRemaining: ticksAhead,
+    })
   }
 
   start() {
@@ -38,6 +52,12 @@ class Scheduler {
     const progress = delta / this.frameDuration;
     this.tasks.forEach(({ task }) => {
       task(delta, progress);
+    });
+    this.scheduledTasks.forEach((task) => {
+      if ((task.ticksRemaining--) <= 0) {
+        task.task(delta, progress);
+        this.removeScheduledTask(task.id);
+      }
     });
     this.timer = requestAnimationFrame(this.tick);
   }
