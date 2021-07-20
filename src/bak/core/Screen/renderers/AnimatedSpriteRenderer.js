@@ -1,12 +1,7 @@
 class StaticSpriteRendered {
-  constructor({ EntityManager, MapManager }) {
-    this.entityManager = EntityManager;
-    this.mapManager = MapManager;
-  }
-
-  render({ display, camera }) {
-    const map = this.mapManager.getMap();
-    this.entityManager.filterByAllComponentName(['position', 'animatedSprite'])
+  static render({ entityManager, mapManager, display, camera }) {
+    const map = mapManager.getMap();
+    entityManager.filterByAllComponentName(['position', 'animatedSprite'])
       .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
       .forEach(entity => {
         const { x, y } = entity.position;
@@ -29,7 +24,7 @@ class StaticSpriteRendered {
         } else {
           nextState.tickCount++;
         }
-        this.entityManager.updateComponent(entity.id, 'animatedSprite', nextState);
+        entityManager.updateComponent(entity.id, 'animatedSprite', nextState);
       });
   }
 }

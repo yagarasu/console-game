@@ -1,6 +1,6 @@
 class Scheduler {
-  constructor({ config }) {
-    this.fps = config.scheduler.fps;
+  constructor({ fps = 30 } = {}) {
+    this.fps = fps;
     this.frameDuration = (1 / this.fps) * 1000;
     this.lastTs = null;
     this.timer = null;
