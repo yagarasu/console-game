@@ -1,23 +1,27 @@
-import { throttle } from 'core/utils';
-
 class KeyBinder {
-  constructor(keymap = {}) {
-    this.bindings = Object.keys(keymap)
-      .reduce((acc, key) => ({ ...acc, [key]: () => keymap[key] }), {});
+  constructor({ config, Keyboard, EventQueue }) {
+    this.keyboard = Keyboard;
+    this.eventQueue = EventQueue;
+    this.bindings = Object.keys(config.keymap)
+      .reduce((acc, key) => ({ ...acc, [key]: () => config.keymap[key] }), {});
+  }
+
+  initialize() {
+    this.subscribeToBindings();
   }
 
   addBinding(key, intentCreator) {
     this.bindings[key] = intentCreator;
   }
 
-  createIntent(key) {
-    return { ...this.bindings[key](), target: 'player' };
+  createEvent(key) {
+    return { ...this.bindings[key](), entityId: 'player' };
   }
 
-  subscribeToBindings(keyboard, inputQueue) {
+  subscribeToBindings() {
     Object.keys(this.bindings).forEach((key) => {
-      keyboard.subscribeTo(key, () => {
-        inputQueue.enqueue(this.createIntent(key));
+      this.keyboard.subscribeTo(key, () => {
+        this.eventQueue.enqueue(this.createEvent(key));
       });
     });
   }

@@ -126,6 +126,7 @@ class EntityManager {
 
   findByTag(tag) {
     const $this = this._getDataRoot();
+    if (!$this.tags[tag]) return [];
     return $this.tags[tag].map((id) => $this.entities[id]);
   }
 }

@@ -1,19 +1,21 @@
 import { Display } from 'rot-js';
-import config from 'data/config';
 import Camera from './Camera';
-import AnimatedSpriteRenderer from './renderers/AnimatedSpriteRenderer';
-import StaticSpriteRenderer from './renderers/StaticSpriteRenderer';
-import TileMapRenderer from './renderers/TileMapRenderer';
 
 class Screen {
-  constructor(entityManager, mapManager) {
+  constructor({
+    config,
+    AnimatedSpriteRenderer,
+    StaticSpriteRenderer,
+    TileMapRenderer,
+  }) {
     this.display = new Display({
       fontSize: config.screen.fontSize,
     });
 
-    this.managers = {
-      entityManager,
-      mapManager,
+    this.renderers = {
+      AnimatedSpriteRenderer,
+      StaticSpriteRenderer,
+      TileMapRenderer,
     };
 
     this.camera = null;
@@ -27,9 +29,9 @@ class Screen {
     const { width, height } = this.display.getOptions();
     this.camera = new Camera(this, { width, height });
 
-    this.addTask(TileMapRenderer);
-    this.addTask(AnimatedSpriteRenderer);
-    this.addTask(StaticSpriteRenderer);
+    this.addTask(this.renderers.TileMapRenderer);
+    this.addTask(this.renderers.AnimatedSpriteRenderer);
+    this.addTask(this.renderers.StaticSpriteRenderer);
   }
 
   addTask(task) {
@@ -44,7 +46,6 @@ class Screen {
     this.display.clear();
     this.tasks.forEach((task) => {
       task.render({
-        ...this.managers,
         camera: this.camera,
         display: this.display,
       }, delta, progress);

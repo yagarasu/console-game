@@ -1,98 +1,60 @@
-import Screen from 'core/Screen';
-import Keyboard from 'core/Keyboard';
-import KeyBinder from 'core/Keyboard/KeyBinder';
-import Scheduler from 'core/Scheduler';
-import EventQueue from 'core/EventQueue';
-import EntityManager from 'core/EntityManager';
-import MapManager from 'core/Map/MapManager';
-import CollisionResolver from 'core/CollisionResolver';
-import TileMap from 'core/Map/TileMap';
+import createContainer from './createContainer';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
-import { createPlayer, createMob } from 'entities/entityFactories';
-import defaultTileset from 'data/defaultTileset';
-import config from 'data/config';
-import PlayerController from 'controllers/PlayerController';
-import MobController from 'controllers/MobController';
 
 class Game {
   constructor() {
-    this.keyboard = new Keyboard();
-    this.keybinder = new KeyBinder(config.keymap);
-    this.scheduler = new Scheduler();
-    this.inputQueue = new EventQueue();
-    this.eventQueue = new EventQueue();
-    this.entityManager = new EntityManager();
-    this.mapManager = new MapManager();
-    this.collisionResolver = new CollisionResolver(this.entityManager, this.mapManager, this.eventQueue);
-    this.screen = new Screen(this.entityManager, this.mapManager);
+    this.container = createContainer();
 
-    this.tasks = {
-      update: null,
-      render: null,
-    };
-
-    this.controllers = {
-      player: new PlayerController(this),
-      mob: new MobController(this.entityManager, this.mapManager),
-    };
+    this.tasks = {};
   }
 
   run() {
     this.initialize();
-    this.scheduler.start();
+    const scheduler = this.container.resolve('Scheduler');
+    scheduler.start();
   }
-
+  
   initialize() {
-    this.screen.initialize();
-
+    // Screen
+    const screen = this.container.resolve('Screen');
+    screen.initialize();
+    
     // Input
-    this.keybinder.subscribeToBindings(this.keyboard, this.inputQueue);
-    this.inputQueue.addConsumer(this.controllers.player.consumer.bind(this.controllers.player));
-
+    const keybinder = this.container.resolve('KeyBinder');
+    keybinder.initialize();
+    
     // Initialize map
-    const map = new TileMap();
-    map.tileset = defaultTileset;
-    DungeonGenerator.digger(map);
-    this.mapManager.setMap(map);
-
+    const mapManager = this.container.resolve('MapManager');
+    mapManager.createMap();
+    DungeonGenerator.digger(mapManager.getMap());
+    
     // Initialize player
-    this.entityManager.createEntity('player', createPlayer());
-    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(map);
-    this.entityManager.updateComponent('player', 'position', { x: playerStartingX, y: playerStartingY });
-    this.entityManager.addTags('player', ['followWithCamera']);
-    this.eventQueue.addConsumer(this.controllers.player.events.bind(this.controllers.player));
-
-    // Initialize mobs
-    for (let i = 0; i < 50; i++) {
-      const id = `mob-${i}`;
-      this.entityManager.createEntity(id, createMob());
-      const [sx, sy] = DungeonGenerator.randomStartingPosition(map);
-      this.entityManager.updateComponent(id, 'position', { x: sx, y: sy });
-      this.entityManager.addTags(id, ['aiControlled']);
-    }
+    const entityManager = this.container.resolve('EntityManager');
+    const entityFactory = this.container.resolve('EntityFactory');
+    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
+    entityManager.createEntity('player', entityFactory.create('player', { position: { x: playerStartingX, y: playerStartingY } }));
+    entityManager.addTags('player', ['followWithCamera']);
+    const eventQueue = this.container.resolve('EventQueue');
+    eventQueue.addConsumer(this.container.resolve('PlayerController'));
 
     // Tasks
-    this.tasks.update = this.scheduler.addTask(
-      this.update.bind(this)
+    const scheduler = this.container.resolve('Scheduler');
+    this.tasks.consumeEvents = scheduler.addTask(
+      eventQueue.consume.bind(eventQueue)
     );
-    this.tasks.render = this.scheduler.addTask(
-      this.screen.render.bind(this.screen)
+     const collisionDetector = this.container.resolve('CollisionDetector');
+     this.tasks.collisionDetect = scheduler.addTask(
+       collisionDetector.update.bind(collisionDetector)
+       );
+    const collisionResolver = this.container.resolve('CollisionResolver');
+    this.tasks.collisionResolve = scheduler.addTask(
+      collisionResolver.update.bind(collisionResolver)
     );
-    // Debug
-    this.scheduler.addTask(() => {
-      this.screen.display.draw(40,0,`(${this.entityManager.entities['mob-0'].position.x},${this.entityManager.entities['mob-0'].position.y})`);
-    });
-
+    this.tasks.render = scheduler.addTask(
+      screen.render.bind(screen)
+    );
+    
     // ...
-  }
-
-  update(delta, progress) {
-    this.entityManager.startTransaction();
-    this.inputQueue.consume({ delta, progress });
-    this.controllers.mob.update();
-    this.collisionResolver.update(delta, progress);
-    this.eventQueue.consume({ delta, progress });
-    this.entityManager.commit();
   }
 }
 
