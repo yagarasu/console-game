@@ -1,8 +1,9 @@
-import { player } from 'entities';
+import { player, mob } from 'entities';
 
 class EntityFactory {
   static entityMap = {
-    player
+    player,
+    mob
   }
 
   static create(entity, params) {

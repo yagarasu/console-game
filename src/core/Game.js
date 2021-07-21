@@ -37,22 +37,34 @@ class Game {
     const eventQueue = this.container.resolve('EventQueue');
     eventQueue.addConsumer(this.container.resolve('PlayerController'));
 
-    // Tasks
+    // Initialize some mobs
+    for (let i = 0; i < 5; i++) {
+      const [startingX, startingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
+      entityManager.createEntity('mob'+i, entityFactory.create('mob', { position: { x: startingX, y: startingY } }));
+      console.log('>New mob %d , %d', startingX, startingY)
+    }
+
+    // === Tasks ===
     const scheduler = this.container.resolve('Scheduler');
+    // Handle events
     this.tasks.consumeEvents = scheduler.addTask(
       eventQueue.consume.bind(eventQueue)
     );
-     const collisionDetector = this.container.resolve('CollisionDetector');
-     this.tasks.collisionDetect = scheduler.addTask(
-       collisionDetector.update.bind(collisionDetector)
-       );
+    // Detect collisions
+    const collisionDetector = this.container.resolve('CollisionDetector');
+    this.tasks.collisionDetect = scheduler.addTask(
+      collisionDetector.update.bind(collisionDetector)
+      );
+    // Resolve collisions
     const collisionResolver = this.container.resolve('CollisionResolver');
     this.tasks.collisionResolve = scheduler.addTask(
       collisionResolver.update.bind(collisionResolver)
     );
+    // Render
     this.tasks.render = scheduler.addTask(
       screen.render.bind(screen)
     );
+    // === Tasks ===
     
     // ...
   }
