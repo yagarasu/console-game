@@ -12,6 +12,13 @@ class TileMap {
     this.tileset = tileset;
   }
 
+  isSolid(x, y) {
+    if (x < 0 || x >= this.width || y < 0 || y >= this.height) return true;
+    const tile = this.getTile(x, y);
+    if (!tile) return false;
+    return tile.solid;
+  }
+
   getTile(x, y) {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
     const idx = (y * this.width) + x;

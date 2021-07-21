@@ -22,7 +22,8 @@ export function withStaticSprite(ch, fg, bg = null) {
 export function withCollision() {
   return {
     collision: {
-      collidesWith: []
+      collidesWith: [],
+      mapCollision: false
     }
   }
 }

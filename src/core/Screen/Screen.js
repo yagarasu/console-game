@@ -30,8 +30,8 @@ class Screen {
     this.camera = new Camera(this, { width, height });
 
     this.addTask(this.renderers.TileMapRenderer);
-    // this.addTask(this.renderers.AnimatedSpriteRenderer);
-    // this.addTask(this.renderers.StaticSpriteRenderer);
+    this.addTask(this.renderers.AnimatedSpriteRenderer);
+    this.addTask(this.renderers.StaticSpriteRenderer);
   }
 
   addTask(task) {
