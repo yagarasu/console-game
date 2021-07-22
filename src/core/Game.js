@@ -32,7 +32,10 @@ class Game {
     const entityManager = this.container.resolve('EntityManager');
     const entityFactory = this.container.resolve('EntityFactory');
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
-    entityManager.createEntity('player', entityFactory.create('player', { position: { x: playerStartingX, y: playerStartingY } }));
+    entityManager.createEntity('player', entityFactory.create('player', {
+      position: { x: playerStartingX, y: playerStartingY },
+      visibility: { radius: 5 },
+    }));
     entityManager.addTags('player', ['followWithCamera']);
     const eventQueue = this.container.resolve('EventQueue');
     eventQueue.addConsumer(this.container.resolve('PlayerController'));
@@ -65,6 +68,11 @@ class Game {
     const collisionResolver = this.container.resolve('CollisionResolver');
     this.tasks.collisionResolve = scheduler.addTask(
       collisionResolver.update.bind(collisionResolver)
+    );
+    // Calculate visibility and FOV
+    const visibilitySystem = this.container.resolve('VisibilitySystem');
+    this.tasks.visibilitySystem = scheduler.addTask(
+      visibilitySystem.update.bind(visibilitySystem)
     );
     // Render
     this.tasks.render = scheduler.addTask(

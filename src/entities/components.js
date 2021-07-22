@@ -4,6 +4,12 @@ export function withPosition({ x, y }) {
   }
 }
 
+export function withVisibility({ radius }) {
+  return {
+    visibility: { radius },
+  }
+}
+
 export function withStats() {
   return {
     stats: {
