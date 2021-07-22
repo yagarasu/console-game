@@ -1,4 +1,4 @@
-export default function PlayerController({ EntityManager, EventQueue }) {
+export default function PlayerController({ EntityManager }) {
   const ID = 'player';
   return () => next => event => {
     const playerEntity = EntityManager.getEntity(ID);

@@ -12,6 +12,8 @@ import KeyBinder from 'core/Keyboard/KeyBinder';
 import * as controllers from 'controllers';
 import CollisionDetector from 'core/CollisionDetector';
 import CollisionResolver from 'core/CollisionResolver';
+import * as systems from 'systems';
+import AiManager from 'core/AI/AiManager';
 
 function createContainer() {
   const container = buildContainer();
@@ -28,12 +30,20 @@ function createContainer() {
     KeyBinder: asClass(KeyBinder, { lifetime: Lifetime.SINGLETON }),
     CollisionDetector: asClass(CollisionDetector, { lifetime: Lifetime.SINGLETON }),
     CollisionResolver: asClass(CollisionResolver, { lifetime: Lifetime.SINGLETON }),
+    AiManager: asClass(AiManager, { lifetime: Lifetime.SINGLETON }),
   });
 
   Object.keys(renderers).forEach((rendererName) => {
     const renderer = renderers[rendererName];
     container.register({
       [rendererName]: asClass(renderer, { lifetime: Lifetime.SINGLETON })
+    })
+  });
+
+  Object.keys(systems).forEach((systemName) => {
+    const system = systems[systemName];
+    container.register({
+      [systemName]: asClass(system, { lifetime: Lifetime.SINGLETON })
     })
   });
 

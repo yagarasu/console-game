@@ -40,12 +40,18 @@ class Game {
     // Initialize some mobs
     for (let i = 0; i < 5; i++) {
       const [startingX, startingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
-      entityManager.createEntity('mob'+i, entityFactory.create('mob', { position: { x: startingX, y: startingY } }));
+      entityManager.createEntity('mob'+i, entityFactory.create('mob', { position: { x: startingX, y: startingY }, ai: { algorithm: 'Fiend' } }));
+      entityManager.addTags('mob'+i, ['mob']);
       console.log('>New mob %d , %d', startingX, startingY)
     }
 
     // === Tasks ===
     const scheduler = this.container.resolve('Scheduler');
+    // AI turn
+    const mobAiSystem = this.container.resolve('MobAiSystem');
+    this.tasks.aiTurn = scheduler.addTask(
+      mobAiSystem.update.bind(mobAiSystem)
+    );
     // Handle events
     this.tasks.consumeEvents = scheduler.addTask(
       eventQueue.consume.bind(eventQueue)

@@ -27,3 +27,12 @@ export function withCollision() {
     }
   }
 }
+
+export function withAi({ algorithm }) {
+  return {
+    ai: {
+      algorithm,
+      state: {}
+    }
+  }
+}
