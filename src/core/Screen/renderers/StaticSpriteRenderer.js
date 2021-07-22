@@ -6,8 +6,10 @@ class StaticSpriteRendered {
 
   render({ display, camera }) {
     const map = this.mapManager.getMap();
+    const mapData = this.mapManager.getMapData();
     this.entityManager.filterByAllComponentName(['position', 'staticSprite'])
       .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
+      .filter(({ position: { x, y } }) => mapData.getData(x, y)?.visibility?.v > 0.3)
       .forEach(entity => {
         const { x, y } = entity.position;
         const { ch, fg, bg } = entity.staticSprite;

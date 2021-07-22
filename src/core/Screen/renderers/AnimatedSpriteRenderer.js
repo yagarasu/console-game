@@ -8,6 +8,7 @@ class StaticSpriteRendered {
     const map = this.mapManager.getMap();
     this.entityManager.filterByAllComponentName(['position', 'animatedSprite'])
       .filter(({ position: { x, y } }) => camera.globalIsVisible(x, y))
+      .filter(({ position: { x, y } }) => mapData.getData(x, y)?.visibility?.v > 0.3)
       .forEach(entity => {
         const { x, y } = entity.position;
         const [lx, ly] = camera.transformGlobalToLocal(x, y);
