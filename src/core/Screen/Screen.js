@@ -4,6 +4,7 @@ import Camera from './Camera';
 class Screen {
   constructor({
     config,
+    HUD,
     AnimatedSpriteRenderer,
     StaticSpriteRenderer,
     TileMapRenderer,
@@ -12,6 +13,7 @@ class Screen {
       fontSize: config.screen.fontSize,
     });
 
+    this.HUD = HUD;
     this.renderers = {
       AnimatedSpriteRenderer,
       StaticSpriteRenderer,
@@ -32,6 +34,7 @@ class Screen {
     this.addTask(this.renderers.TileMapRenderer);
     this.addTask(this.renderers.AnimatedSpriteRenderer);
     this.addTask(this.renderers.StaticSpriteRenderer);
+    this.addTask(this.HUD);
   }
 
   addTask(task) {

@@ -22,7 +22,7 @@ class Game {
     // Input
     const keybinder = this.container.resolve('KeyBinder');
     keybinder.initialize();
-    
+
     // Initialize map
     const mapManager = this.container.resolve('MapManager');
     mapManager.createMap();
@@ -34,7 +34,7 @@ class Game {
     const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
     entityManager.createEntity('player', entityFactory.create('player', {
       position: { x: playerStartingX, y: playerStartingY },
-      visibility: { radius: 5 },
+      visibility: { radius: 10 },
     }));
     entityManager.addTags('player', ['followWithCamera']);
     const eventQueue = this.container.resolve('EventQueue');

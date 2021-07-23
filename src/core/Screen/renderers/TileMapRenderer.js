@@ -32,7 +32,7 @@ class TileMapRenderer {
       const { visibility: { v = 0 } = {}, known } = data ?? {};
       const finalFg = this.calculateColor(fg, v, known);
       const finalBg = this.calculateColor(bg, v, known);
-      display.draw(lx, ly, ' ', finalFg, finalBg);
+      display.draw(lx, ly, char, finalFg, finalBg);
     });
   }
 }

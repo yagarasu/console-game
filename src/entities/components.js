@@ -13,8 +13,8 @@ export function withVisibility({ radius }) {
 export function withStats() {
   return {
     stats: {
-      health: 100,
-      mana: 100
+      focus: 100,
+      energy: 100
     },
   }
 }

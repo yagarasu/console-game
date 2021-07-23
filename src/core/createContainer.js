@@ -1,6 +1,7 @@
 import { createContainer as buildContainer, asValue, asClass, asFunction, Lifetime } from 'awilix';
 import config from 'data/config';
 import Screen from 'core/Screen';
+import HUD from 'core/Screen/HUD';
 import * as renderers from 'core/Screen/renderers';
 import Scheduler from 'core/Scheduler';
 import EventQueue from 'core/EventQueue';
@@ -21,6 +22,7 @@ function createContainer() {
   container.register({
     config: asValue(config),
     Screen: asClass(Screen, { lifetime: Lifetime.SINGLETON }),
+    HUD: asClass(HUD, { lifetime: Lifetime.SINGLETON }),
     Scheduler: asClass(Scheduler, { lifetime: Lifetime.SINGLETON }),
     EventQueue: asClass(EventQueue, { lifetime: Lifetime.SINGLETON }),
     EntityManager: asClass(EntityManager, { lifetime: Lifetime.SINGLETON }),
