@@ -44,7 +44,7 @@ class InGameMenu {
   renderGrimoireMenu(display) {
     drawBox(display, 0, 0, 20, 23);
     display.drawText(5, 1, '\u263F Spells \u263F');
-    display.drawText(2, 3, '\u269D Astral beam');
+    display.drawText(2, 3, '\u269D Banish');
   }
 
   render({ display }) {

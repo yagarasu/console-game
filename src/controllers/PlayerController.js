@@ -19,6 +19,9 @@ export default function PlayerController({ EntityManager }) {
           break;
       }
     }
+    if (event.type === 'CAST') {
+      console.log('BOOM');
+    }
     next();
   };
 }
