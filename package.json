@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "awilix": "^4.3.4",
+    "ecsy": "^0.4.2",
     "rot-js": "^2.1.5"
   },
   "devDependencies": {

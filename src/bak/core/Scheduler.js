@@ -1,5 +1,7 @@
 class Scheduler {
-  constructor() {
+  constructor({ config }) {
+    this.fps = config.scheduler.fps;
+    this.frameDuration = (1 / this.fps) * 1000;
     this.lastTs = null;
     this.timer = null;
     this.tick = this.tick.bind(this);
@@ -47,12 +49,13 @@ class Scheduler {
     if (!this.lastTs) this.lastTs = performance.now();
     const delta = ts - this.lastTs;
     this.lastTs = ts;
+    const progress = delta / this.frameDuration;
     this.tasks.forEach(({ task }) => {
-      task(delta, ts);
+      task(delta, progress);
     });
     this.scheduledTasks.forEach((task) => {
       if ((task.ticksRemaining--) <= 0) {
-        task.task(delta, ts);
+        task.task(delta, progress);
         this.removeScheduledTask(task.id);
       }
     });

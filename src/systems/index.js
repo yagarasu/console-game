@@ -1,2 +1,8 @@
-export { default as MobAiSystem } from './MobAiSystem';
-export { default as VisibilitySystem } from './VisibilitySystem';
+import MovementSystem from './MovementSystem';
+import RenderSystem from './RenderSystem';
+
+export default function registerSystems(world) {
+  world
+    .registerSystem(MovementSystem)
+    .registerSystem(RenderSystem);
+}
