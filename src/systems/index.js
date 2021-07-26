@@ -1,2 +1,2 @@
-export { default as MobAiSystem } from './MobAiSystem';
-export { default as VisibilitySystem } from './VisibilitySystem';
+export { default as RenderSystem } from './RenderSystem';
+export { default as CameraFollowSystem } from './CameraFollowSystem';
