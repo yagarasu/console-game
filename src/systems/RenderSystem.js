@@ -11,6 +11,7 @@ class RenderSystem extends System {
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
     this.map = this.createQuery().fromAll('Tilemap');
     this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite');
+    this.animatedSprites = this.createQuery().fromAll('Position', 'AnimatedSprite');
     this.fovAllies = this.createQuery().fromAll('FOVAlly', 'Vision');
   }
 
@@ -27,6 +28,7 @@ class RenderSystem extends System {
     display.clear();
     this.renderTilemap(tick, camera);
     this.renderStaticSprites(tick, camera);
+    this.renderAnimatedSprites(tick, camera);
   }
 
   calculateSharedFov() {
@@ -85,6 +87,35 @@ class RenderSystem extends System {
       const [lx, ly] = camera.transformGlobalToLocal(position.x, position.y);
       const sprite = entity.getOne('StaticSprite');
       display.draw(lx, ly, sprite.ch, sprite.fg, sprite.bg ?? tileBg);
+    }
+  }
+
+  renderAnimatedSprites(tick, camera) {
+    const display = this.screen.getDisplay();
+    const [mapEntity] = this.map.execute();
+    const { map } = mapEntity.getOne('Tilemap');
+    const entities = this.animatedSprites.execute();
+    for (const entity of entities) {
+      const position = entity.getOne('Position');
+      if (!camera.globalIsVisible(position.x, position.y)) continue;
+      const tileBg = map.getTile(position.x, position.y)?.bg;
+      const [lx, ly] = camera.transformGlobalToLocal(position.x, position.y);
+      const sprite = entity.getOne('AnimatedSprite');
+      const { frames, currentFrame, ticks, frameDuration } = sprite;
+
+      display.draw(lx, ly, frames[currentFrame], sprite.fg, sprite.bg ?? tileBg);      
+
+      if (ticks >= frameDuration) {
+        if (currentFrame >= frames.length - 1) {
+          sprite.currentFrame = 0;
+        } else {
+          sprite.currentFrame++;
+        }
+        sprite.ticks = 0;
+      } else {
+        sprite.ticks++;
+      }
+      sprite.update();
     }
   }
 
