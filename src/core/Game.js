@@ -6,10 +6,16 @@ import * as components from 'components';
 import tags from 'components/tags';
 import {
   RenderSystem,
-  CameraFollowSystem
+  CameraFollowSystem,
+  MoveWithKeyboardSystem,
+  TilemapCollisionResolverSystem,
+  MovementSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
+import MessageQueue from 'core/MessageQueue';
+import KeyBinder from 'core/KeyBinder';
+import navKeyBinding from 'data/navKeyBinding';
 
 class Game {
   constructor() {
@@ -17,6 +23,9 @@ class Game {
     this.world = new World();
     this.screen = new Screen();
     this.mapManager = new MapManager();
+    this.messageQueue = new MessageQueue();
+    this.keyBinder = new KeyBinder(this.messageQueue);
+    this.keyBinder.addBinding('nav', navKeyBinding);
   }
 
   initialize() {
@@ -25,6 +34,9 @@ class Game {
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
+    this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
+    this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
+    this.world.registerSystem(MovementSystem.group, MovementSystem);
 
     // Register components
     Object.values(components).forEach(component => {
@@ -68,7 +80,7 @@ class Game {
     });
     this.world.createEntity({
       id: 'player',
-      tags: ['FollowWithMainCamera'],
+      tags: ['FollowWithMainCamera', 'MoveWithKeyboard'],
       components: [
         {
           type: 'Position',
@@ -79,13 +91,20 @@ class Game {
         {
           type: 'StaticSprite',
           key: 'StaticSprite',
-          ch: '@',
+          ch: '\u263B',
           fg: '#c00',
-          bg: '#000'
+        },
+        {
+          type: 'Movable',
+          key: 'Movable',
+          cooldown: 8
         }
       ]
     });
 
+    this.scheduler.addTask(() => {
+      this.messageQueue.consume();
+    });
     this.scheduler.addTask(() => {
       this.world.runSystems(SYSTEM_GROUP_FRAME);
     });

@@ -4,7 +4,7 @@ class StaticSprite extends Component {
   static properties = {
     ch: '@',
     fg: '#fff',
-    bg: '#000'
+    bg: null
   }
 }
 

@@ -49,13 +49,16 @@ class RenderSystem extends System {
 
   renderStaticSprites(tick, camera) {
     const display = this.screen.getDisplay();
+    const [mapEntity] = this.map.execute();
+    const { map } = mapEntity.getOne('Tilemap');
     const entities = this.staticSprites.execute();
     for (const entity of entities) {
       const position = entity.getOne('Position');
       if (!camera.globalIsVisible(position.x, position.y)) continue;
+      const tileBg = map.getTile(position.x, position.y)?.bg;
       const [lx, ly] = camera.transformGlobalToLocal(position.x, position.y);
       const sprite = entity.getOne('StaticSprite');
-      display.draw(lx, ly, sprite.ch, sprite.fg, sprite.bg);
+      display.draw(lx, ly, sprite.ch, sprite.fg, sprite.bg ?? tileBg);
     }
   }
 

@@ -1,4 +1,5 @@
 export default [
   'MainCamera',
-  'FollowWithMainCamera'
+  'FollowWithMainCamera',
+  'MoveWithKeyboard'
 ];
