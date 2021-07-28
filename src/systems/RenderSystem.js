@@ -18,17 +18,18 @@ class RenderSystem extends System {
   update(tick) {
     this.render(tick);
   }
-
+  
   render(tick) {
+    const sharedFov = this.calculateSharedFov();
     const cameraData = this.camera.execute();
     const [mainCameraData] = cameraData.values();
     const { x, y, width, height } = mainCameraData.getOne('Viewport');
     const camera = new Camera(this.screen, { x, y, width, height });
     const display = this.screen.getDisplay();
     display.clear();
-    this.renderTilemap(tick, camera);
-    this.renderStaticSprites(tick, camera);
-    this.renderAnimatedSprites(tick, camera);
+    this.renderTilemap(tick, camera, sharedFov);
+    this.renderStaticSprites(tick, camera, sharedFov);
+    this.renderAnimatedSprites(tick, camera, sharedFov);
   }
 
   calculateSharedFov() {
@@ -47,62 +48,69 @@ class RenderSystem extends System {
       }
     }, {});
   }
-  
-  renderTilemap(tick, camera) {
-    const calculateColor = (color, visibility, known) => {
-      let percentage = 0;
-      if (visibility < 0.3 && known) {
-        percentage = 0.3;
-      } else {
-        percentage = visibility;
-      }
-      return Color.toHex(Color.interpolate([0, 0, 0], Color.fromString(color), percentage));
+
+  calculateColor(color, visibility, known) {
+    let percentage = 0;
+    if (visibility < 0.3 && known) {
+      percentage = 0.3;
+    } else {
+      percentage = visibility;
     }
+    return Color.toHex(Color.interpolate([0, 0, 0], Color.fromString(color), percentage));
+  }
+  
+  renderTilemap(tick, camera, sharedFov) {
     const display = this.screen.getDisplay();
     const entities = this.map.execute();
-    const sharedFov = this.calculateSharedFov();
     for (const entity of entities) {
-      const vision = entity.has('Vision') ? entity.getOne('Vision') : { data: {}};
-      const { map, mapData } = entity.getOne('Tilemap');
+      const { map } = entity.getOne('Tilemap');
       camera.forEachLocalTile((lx, ly, gx, gy) => {
         const tile = map.getTile(gx, gy);
         if (!tile) return;
         const { fg, bg, char } = tile;
-        const ffg = calculateColor(fg, sharedFov[`${gx},${gy}`], true);
-        const fbg = calculateColor(bg, sharedFov[`${gx},${gy}`], true);
+        const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
+        const fbg = this.calculateColor(bg, sharedFov[`${gx},${gy}`], true);
         display.draw(lx, ly, char, ffg, fbg);
       });
     }
   }
 
-  renderStaticSprites(tick, camera) {
+  renderStaticSprites(tick, camera, sharedFov) {
     const display = this.screen.getDisplay();
     const [mapEntity] = this.map.execute();
     const { map } = mapEntity.getOne('Tilemap');
     const entities = this.staticSprites.execute();
-    for (const entity of entities) {
+    for (const entity of entities) { 
       const position = entity.getOne('Position');
-      if (!camera.globalIsVisible(position.x, position.y)) continue;
-      const tileBg = map.getTile(position.x, position.y)?.bg;
-      const [lx, ly] = camera.transformGlobalToLocal(position.x, position.y);
+      const { x: gx, y: gy } = position;
+      if (!camera.globalIsVisible(gx, gy)) continue;
+      if (!sharedFov[`${gx},${gy}`] && !entity.has('FOVAlly')) continue;
+      const tileBg = map.getTile(gx, gy)?.bg;
+      const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
       const sprite = entity.getOne('StaticSprite');
-      display.draw(lx, ly, sprite.ch, sprite.fg, sprite.bg ?? tileBg);
+      const { fg, bg, ch } = sprite;
+      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
+      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`], true);
+      display.draw(lx, ly, ch, ffg, fbg);
     }
   }
 
-  renderAnimatedSprites(tick, camera) {
+  renderAnimatedSprites(tick, camera, sharedFov) {
     const display = this.screen.getDisplay();
     const [mapEntity] = this.map.execute();
     const { map } = mapEntity.getOne('Tilemap');
     const entities = this.animatedSprites.execute();
     for (const entity of entities) {
       const position = entity.getOne('Position');
-      if (!camera.globalIsVisible(position.x, position.y)) continue;
-      const tileBg = map.getTile(position.x, position.y)?.bg;
-      const [lx, ly] = camera.transformGlobalToLocal(position.x, position.y);
+      const { x: gx, y: gy } = position;
+      if (!camera.globalIsVisible(gx, gy)) continue;
+      if (!sharedFov[`${gx},${gy}`] && !entity.has('FOVAlly')) continue;
+      const tileBg = map.getTile(gx, gy)?.bg;
+      const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
       const sprite = entity.getOne('AnimatedSprite');
-      const { frames, currentFrame, ticks, frameDuration } = sprite;
-
+      const { frames, currentFrame, ticks, frameDuration, fg, bg } = sprite;
+      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
+      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`], true);
       display.draw(lx, ly, frames[currentFrame], sprite.fg, sprite.bg ?? tileBg);      
 
       if (ticks >= frameDuration) {

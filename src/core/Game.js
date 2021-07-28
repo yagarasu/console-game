@@ -109,6 +109,25 @@ class Game {
         }
       ]
     });
+    
+    this.world.createEntity({
+      id: 'stuff',
+      tags: ['FOVAlly'],
+      components: [
+        {
+          type: 'Position',
+          key: 'Position',
+          x: playerStartingX,
+          y: playerStartingY,
+        },
+        {
+          type: 'StaticSprite',
+          key: 'StaticSprite',
+          ch: 'ü',
+          fg: '#0f0',
+        },
+      ]
+    });
 
     for (let i = 0; i < 10; i++) {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
