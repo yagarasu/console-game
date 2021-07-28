@@ -11,6 +11,7 @@ import {
   TilemapCollisionResolverSystem,
   MovementSystem,
   VisionSystem,
+  AISystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -34,11 +35,12 @@ class Game {
 
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
-    this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
+    this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
+    this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 
     // Register components
     Object.values(components).forEach(component => {
@@ -99,7 +101,6 @@ class Game {
         {
           type: 'Movable',
           key: 'Movable',
-          cooldown: 8
         },
         {
           type: 'Vision',
@@ -108,6 +109,35 @@ class Game {
         }
       ]
     });
+
+    for (let i = 0; i < 10; i++) {
+      const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
+      this.world.createEntity({
+      id: 'mob-' + i,
+      components: [
+        {
+          type: 'Position',
+          key: 'Position',
+          x: mobx,
+          y: moby,
+        },
+        {
+          type: 'StaticSprite',
+          key: 'StaticSprite',
+          ch: '\u263B',
+          fg: '#6a9f9d',
+        },
+        {
+          type: 'Movable',
+          key: 'Movable',
+        },
+        {
+          type: 'AI',
+          algorithm: 'fiend',
+        }
+      ]
+    });
+    }
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();
