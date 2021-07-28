@@ -11,6 +11,7 @@ class RenderSystem extends System {
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
     this.map = this.createQuery().fromAll('Tilemap');
     this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite');
+    this.fovAllies = this.createQuery().fromAll('FOVAlly', 'Vision');
   }
 
   update(tick) {
@@ -27,22 +28,47 @@ class RenderSystem extends System {
     this.renderTilemap(tick, camera);
     this.renderStaticSprites(tick, camera);
   }
+
+  calculateSharedFov() {
+    const fovAllies = Array.from(this.fovAllies.execute());
+    return fovAllies.reduce((acc, ally) => {
+      const { data } = ally.getOne('Vision');
+      const knownTiles = Object.keys(acc);
+      const newTiles = Object.keys(data);
+      const shared = newTiles.filter(newTile => knownTiles.includes(newTile));
+      const haveMoreInfo = shared.filter(tile => data[tile].v > knownTiles[tile]);
+      const newInfo = newTiles.filter(newTile => !knownTiles.includes(newTile));
+      return {
+        ...acc,
+        ...haveMoreInfo.reduce((acc, coord) => ({ ...acc, [coord]: data[coord].v }), {}),
+        ...newInfo.reduce((acc, coord) => ({ ...acc, [coord]: data[coord].v }), {}),
+      }
+    }, {});
+  }
   
   renderTilemap(tick, camera) {
+    const calculateColor = (color, visibility, known) => {
+      let percentage = 0;
+      if (visibility < 0.3 && known) {
+        percentage = 0.3;
+      } else {
+        percentage = visibility;
+      }
+      return Color.toHex(Color.interpolate([0, 0, 0], Color.fromString(color), percentage));
+    }
     const display = this.screen.getDisplay();
     const entities = this.map.execute();
+    const sharedFov = this.calculateSharedFov();
     for (const entity of entities) {
+      const vision = entity.has('Vision') ? entity.getOne('Vision') : { data: {}};
       const { map, mapData } = entity.getOne('Tilemap');
       camera.forEachLocalTile((lx, ly, gx, gy) => {
         const tile = map.getTile(gx, gy);
-        const data = mapData.getData(gx, gy);
         if (!tile) return;
         const { fg, bg, char } = tile;
-        // const { visibility: { v = 0 } = {}, known } = data ?? {};
-        // const finalFg = this.calculateColor(fg, v, known);
-        // const finalBg = this.calculateColor(bg, v, known);
-        // display.draw(lx, ly, char, finalFg, finalBg);
-        display.draw(lx, ly, char, fg, bg);
+        const ffg = calculateColor(fg, sharedFov[`${gx},${gy}`], true);
+        const fbg = calculateColor(bg, sharedFov[`${gx},${gy}`], true);
+        display.draw(lx, ly, char, ffg, fbg);
       });
     }
   }

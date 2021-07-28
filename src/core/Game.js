@@ -10,6 +10,7 @@ import {
   MoveWithKeyboardSystem,
   TilemapCollisionResolverSystem,
   MovementSystem,
+  VisionSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -37,6 +38,7 @@ class Game {
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
+    this.world.registerSystem(VisionSystem.group, VisionSystem);
 
     // Register components
     Object.values(components).forEach(component => {
@@ -80,7 +82,7 @@ class Game {
     });
     this.world.createEntity({
       id: 'player',
-      tags: ['FollowWithMainCamera', 'MoveWithKeyboard'],
+      tags: ['FollowWithMainCamera', 'MoveWithKeyboard', 'FOVAlly'],
       components: [
         {
           type: 'Position',
@@ -98,6 +100,11 @@ class Game {
           type: 'Movable',
           key: 'Movable',
           cooldown: 8
+        },
+        {
+          type: 'Vision',
+          key: 'Vision',
+          sight: 5
         }
       ]
     });
