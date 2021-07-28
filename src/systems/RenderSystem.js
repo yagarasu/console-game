@@ -49,9 +49,9 @@ class RenderSystem extends System {
     }, {});
   }
 
-  calculateColor(color, visibility, known) {
+  calculateColor(color, visibility) {
     let percentage = 0;
-    if (visibility < 0.3 && known) {
+    if (visibility < 0.3) {
       percentage = 0.3;
     } else {
       percentage = visibility;
@@ -63,13 +63,15 @@ class RenderSystem extends System {
     const display = this.screen.getDisplay();
     const entities = this.map.execute();
     for (const entity of entities) {
-      const { map } = entity.getOne('Tilemap');
+      const { map, mapData } = entity.getOne('Tilemap');
       camera.forEachLocalTile((lx, ly, gx, gy) => {
         const tile = map.getTile(gx, gy);
         if (!tile) return;
+        const isKnown = mapData.getData(gx, gy, 'known');
+        if (!isKnown) return;
         const { fg, bg, char } = tile;
-        const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
-        const fbg = this.calculateColor(bg, sharedFov[`${gx},${gy}`], true);
+        const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`]);
+        const fbg = this.calculateColor(bg, sharedFov[`${gx},${gy}`]);
         display.draw(lx, ly, char, ffg, fbg);
       });
     }
@@ -89,8 +91,8 @@ class RenderSystem extends System {
       const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
       const sprite = entity.getOne('StaticSprite');
       const { fg, bg, ch } = sprite;
-      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
-      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`], true);
+      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`]);
+      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`]);
       display.draw(lx, ly, ch, ffg, fbg);
     }
   }
@@ -109,8 +111,8 @@ class RenderSystem extends System {
       const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
       const sprite = entity.getOne('AnimatedSprite');
       const { frames, currentFrame, ticks, frameDuration, fg, bg } = sprite;
-      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`], true);
-      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`], true);
+      const ffg = this.calculateColor(fg, sharedFov[`${gx},${gy}`]);
+      const fbg = this.calculateColor(bg ?? tileBg, sharedFov[`${gx},${gy}`]);
       display.draw(lx, ly, frames[currentFrame], sprite.fg, sprite.bg ?? tileBg);      
 
       if (ticks >= frameDuration) {
