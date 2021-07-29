@@ -163,6 +163,10 @@ class Game {
           {
             type: 'AI',
             algorithm: 'fiend',
+            state: {
+              tick: 0,
+              cooldown: 16
+            },
           }
         ]
       });
