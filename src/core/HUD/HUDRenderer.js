@@ -1,23 +1,18 @@
 import EnergyGauge from './EnergyGauge';
 
 class HUDRenderer {
-  constructor(game) {
-    this.game = game;
-    this.screen = game.screen;
-    this.layers = [];
+  constructor(screen) {
+    this.screen = screen;
+    this.components = [];
   }
 
-  initialize() {
-    this.addLayer(new EnergyGauge(this.game.world.getEntity('player')));
-  }
-
-  addLayer(layer) {
-    this.layers.push(layer);
+  addComponent(id, component) {
+    this.components.push({ id, component });
   }
 
   render() {
-    this.layers.forEach(layer => {
-      layer.render(this.screen);
+    this.components.forEach(({ component }) => {
+      component.render(this.screen);
     })
   }
 }

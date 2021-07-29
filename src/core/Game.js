@@ -17,8 +17,11 @@ import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
 import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
-import HUDRenderer from 'core/HUD/HUDRenderer';
 import navKeyBinding from 'data/navKeyBinding';
+import menuKeyBinding from 'data/menuKeyBinding';
+import HUDRenderer from 'core/HUD/HUDRenderer';
+import EnergyGauge from 'core/HUD/EnergyGauge';
+import PlayerMenu from 'core/HUD/PlayerMenu';
 
 class Game {
   constructor() {
@@ -27,9 +30,10 @@ class Game {
     this.screen = new Screen();
     this.mapManager = new MapManager();
     this.messageQueue = new MessageQueue();
-    this.hud = new HUDRenderer(this);
+    this.hud = new HUDRenderer(this.screen);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
+    this.keyBinder.addBinding('menu', menuKeyBinding);
   }
 
   initialize() {
@@ -164,7 +168,8 @@ class Game {
       });
     }
 
-    this.hud.initialize();
+    this.hud.addComponent('playerStats', new EnergyGauge(this.world.getEntity('player')));
+    this.hud.addComponent('playerMenu', new PlayerMenu(this.messageQueue));
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();
