@@ -7,7 +7,7 @@ class CameraFollowSystem extends System {
 
   init() {
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
-    this.target = this.createQuery().fromAll('FollowWithMainCamera', 'Position');
+    this.target = this.createQuery().fromAll('FollowWithMainCamera', 'Position').persist();
   }
 
   update(tick) {

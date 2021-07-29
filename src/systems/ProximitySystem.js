@@ -5,8 +5,8 @@ class ProximitySystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
   init() {
-    this.triggers = this.createQuery().fromAll('ProximityTrigger', 'Position');
-    this.clients = this.createQuery().fromAll('ProximityClient', 'Position');
+    this.triggers = this.createQuery().fromAll('ProximityTrigger', 'Position').persist();
+    this.clients = this.createQuery().fromAll('ProximityClient', 'Position').persist();
   }
 
   update(tick) {

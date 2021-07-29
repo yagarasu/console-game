@@ -13,6 +13,7 @@ import {
   VisionSystem,
   AISystem,
   ProximitySystem,
+  CollisionDetectorSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -23,6 +24,11 @@ import menuKeyBinding from 'data/menuKeyBinding';
 import HUDRenderer from 'core/HUD/HUDRenderer';
 import EnergyGauge from 'core/HUD/EnergyGauge';
 import PlayerMenu from 'core/HUD/PlayerMenu';
+
+import mainCamera from 'entityTemplates/mainCamera';
+import player from 'entityTemplates/player';
+import mob from 'entityTemplates/mob';
+import portal from 'entityTemplates/portal';
 
 class Game {
   constructor() {
@@ -47,6 +53,7 @@ class Game {
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
+    this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 
@@ -76,111 +83,12 @@ class Game {
       ],
     });
 
-    this.world.createEntity({
-      id: 'camera',
-      tags: ['MainCamera'],
-      components: [
-        {
-          type: 'Viewport',
-          key: 'Viewport',
-          x: playerStartingX,
-          y: playerStartingY,
-          width: this.screen.getDisplay().getOptions().width,
-          height: this.screen.getDisplay().getOptions().height,
-        }
-      ]
-    });
-    this.world.createEntity({
-      id: 'player',
-      tags: ['FollowWithMainCamera', 'MoveWithKeyboard', 'FOVAlly'],
-      components: [
-        {
-          type: 'Position',
-          key: 'Position',
-          x: playerStartingX,
-          y: playerStartingY,
-        },
-        {
-          type: 'StaticSprite',
-          key: 'StaticSprite',
-          ch: '\u263B',
-          fg: '#c00',
-        },
-        {
-          type: 'Movable',
-          key: 'Movable',
-        },
-        {
-          type: 'Vision',
-          key: 'Vision',
-          sight: 5
-        },
-        {
-          type: 'Stats',
-          key: 'Stats',
-        },
-        {
-          type: 'ProximityClient',
-          key: 'ProximityClient',
-        }
-      ]
-    });
-    
-    this.world.createEntity({
-      id: 'portal',
-      tags: ['FOVAlly'],
-      components: [
-        {
-          type: 'Position',
-          key: 'Position',
-          x: playerStartingX,
-          y: playerStartingY,
-        },
-        {
-          type: 'AnimatedSprite',
-          key: 'AnimatedSprite',
-          frames: ['\u233A', '\u233B', '\u233C'],
-          fg: '#ee5757',
-          bg: '#631f1f'
-        },
-        {
-          type: 'ProximityTrigger',
-          key: 'ProximityTrigger',
-        }
-      ]
-    });
-
+    this.world.createEntity(mainCamera('camera', playerStartingX, playerStartingY, this.screen));
+    this.world.createEntity(player('player', playerStartingX, playerStartingY));
+    this.world.createEntity(portal('portal', playerStartingX, playerStartingY));
     for (let i = 0; i < 10; i++) {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
-      this.world.createEntity({
-        id: 'mob-' + i,
-        components: [
-          {
-            type: 'Position',
-            key: 'Position',
-            x: mobx,
-            y: moby,
-          },
-          {
-            type: 'StaticSprite',
-            key: 'StaticSprite',
-            ch: '\u263B',
-            fg: '#6a9f9d',
-          },
-          {
-            type: 'Movable',
-            key: 'Movable',
-          },
-          {
-            type: 'AI',
-            algorithm: 'fiend',
-            state: {
-              tick: 0,
-              cooldown: 16
-            },
-          }
-        ]
-      });
+      this.world.createEntity(mob('mob-' + i, mobx, moby));
     }
 
     this.hud.addComponent('playerStats', new EnergyGauge(this.world.getEntity('player')));

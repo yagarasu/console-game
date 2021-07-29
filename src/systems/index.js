@@ -6,3 +6,4 @@ export { default as MovementSystem } from './MovementSystem';
 export { default as VisionSystem } from './VisionSystem';
 export { default as AISystem } from './AISystem';
 export { default as ProximitySystem } from './ProximitySystem';
+export { default as CollisionDetectorSystem } from './CollisionDetectorSystem';

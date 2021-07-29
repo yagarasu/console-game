@@ -7,7 +7,7 @@ class MoveWithKeyboardSystem extends System {
   init(messageQueue) {
     this.messageQueue = messageQueue;
     this.messageQueue.addConsumer(this.consumer.bind(this));
-    this.target = this.createQuery().fromAll('MoveWithKeyboard', 'Movable');
+    this.target = this.createQuery().fromAll('MoveWithKeyboard', 'Movable').persist();
   }
 
   consumer() {

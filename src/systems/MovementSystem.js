@@ -5,7 +5,7 @@ class MovementSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
   init() {
-    this.movable = this.createQuery().fromAll('Movable', 'Position');
+    this.movable = this.createQuery().fromAll('Movable', 'Position').persist();
   }
 
   update(tick) {

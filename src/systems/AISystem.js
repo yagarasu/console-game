@@ -6,7 +6,7 @@ class AISystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
   init() {
-    this.entities = this.createQuery().fromAll('AI');
+    this.entities = this.createQuery().fromAll('AI').persist();
   }
 
   runAlgorithm(algorithm, entity) {
