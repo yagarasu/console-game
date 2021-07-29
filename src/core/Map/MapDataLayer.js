@@ -18,6 +18,7 @@ class MapDataLayer {
   getData(x, y, type) {
     if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
     const idx = (y * this.width) + x;
+    if (!this.data[idx]) return;
     if (type) return this.data[idx][type];
     return this.data[idx];
   }

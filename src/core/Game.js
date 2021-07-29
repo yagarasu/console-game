@@ -1,86 +1,194 @@
-import createContainer from './createContainer';
+import Scheduler from "core/Scheduler";
+import { World } from "ape-ecs";
+import { SYSTEM_GROUP_FRAME } from "systems/groups";
+import Screen from 'core/Screen';
+import * as components from 'components';
+import tags from 'components/tags';
+import {
+  RenderSystem,
+  CameraFollowSystem,
+  MoveWithKeyboardSystem,
+  TilemapCollisionResolverSystem,
+  MovementSystem,
+  VisionSystem,
+  AISystem,
+} from 'systems';
+import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
+import MessageQueue from 'core/MessageQueue';
+import KeyBinder from 'core/KeyBinder';
+import navKeyBinding from 'data/navKeyBinding';
+import menuKeyBinding from 'data/menuKeyBinding';
+import HUDRenderer from 'core/HUD/HUDRenderer';
+import EnergyGauge from 'core/HUD/EnergyGauge';
+import PlayerMenu from 'core/HUD/PlayerMenu';
 
 class Game {
   constructor() {
-    this.container = createContainer();
+    this.scheduler = new Scheduler();
+    this.world = new World();
+    this.screen = new Screen();
+    this.mapManager = new MapManager();
+    this.messageQueue = new MessageQueue();
+    this.hud = new HUDRenderer(this.screen);
+    this.keyBinder = new KeyBinder(this.messageQueue);
+    this.keyBinder.addBinding('nav', navKeyBinding);
+    this.keyBinder.addBinding('menu', menuKeyBinding);
+  }
 
-    this.tasks = {};
+  initialize() {
+    this.screen.initialize();
+
+    // Register systems
+    this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
+    this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
+    this.world.registerSystem(AISystem.group, AISystem);
+    this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
+    this.world.registerSystem(MovementSystem.group, MovementSystem);
+    this.world.registerSystem(VisionSystem.group, VisionSystem);
+    this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
+
+    // Register components
+    Object.values(components).forEach(component => {
+      this.world.registerComponent(component);
+    });
+    // Register tags
+    this.world.registerTags(...tags);
+
+    // Initialize test world
+    this.mapManager.createMap();
+    DungeonGenerator.digger(this.mapManager.getMap());
+    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
+    this.world.createEntity({
+      id: 'mainMap',
+      components: [
+        {
+          type: 'Tilemap',
+          key: 'Tilemap',
+          width: this.mapManager.getMap().width,
+          height: this.mapManager.getMap().height,
+          map: this.mapManager.getMap(),
+          mapData: this.mapManager.getMapData(),
+          tileset: this.mapManager.getMap().tileset,
+        }
+      ],
+    });
+
+    this.world.createEntity({
+      id: 'camera',
+      tags: ['MainCamera'],
+      components: [
+        {
+          type: 'Viewport',
+          key: 'Viewport',
+          x: playerStartingX,
+          y: playerStartingY,
+          width: this.screen.getDisplay().getOptions().width,
+          height: this.screen.getDisplay().getOptions().height,
+        }
+      ]
+    });
+    this.world.createEntity({
+      id: 'player',
+      tags: ['FollowWithMainCamera', 'MoveWithKeyboard', 'FOVAlly'],
+      components: [
+        {
+          type: 'Position',
+          key: 'Position',
+          x: playerStartingX,
+          y: playerStartingY,
+        },
+        {
+          type: 'StaticSprite',
+          key: 'StaticSprite',
+          ch: '\u263B',
+          fg: '#c00',
+        },
+        {
+          type: 'Movable',
+          key: 'Movable',
+        },
+        {
+          type: 'Vision',
+          key: 'Vision',
+          sight: 5
+        },
+        {
+          type: 'Stats',
+          key: 'Stats',
+        }
+      ]
+    });
+    
+    this.world.createEntity({
+      id: 'stuff',
+      tags: ['FOVAlly'],
+      components: [
+        {
+          type: 'Position',
+          key: 'Position',
+          x: playerStartingX,
+          y: playerStartingY,
+        },
+        {
+          type: 'StaticSprite',
+          key: 'StaticSprite',
+          ch: 'ü',
+          fg: '#0f0',
+        },
+      ]
+    });
+
+    for (let i = 0; i < 10; i++) {
+      const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
+      this.world.createEntity({
+        id: 'mob-' + i,
+        components: [
+          {
+            type: 'Position',
+            key: 'Position',
+            x: mobx,
+            y: moby,
+          },
+          {
+            type: 'StaticSprite',
+            key: 'StaticSprite',
+            ch: '\u263B',
+            fg: '#6a9f9d',
+          },
+          {
+            type: 'Movable',
+            key: 'Movable',
+          },
+          {
+            type: 'AI',
+            algorithm: 'fiend',
+            state: {
+              tick: 0,
+              cooldown: 16
+            },
+          }
+        ]
+      });
+    }
+
+    this.hud.addComponent('playerStats', new EnergyGauge(this.world.getEntity('player')));
+    this.hud.addComponent('playerMenu', new PlayerMenu(this.messageQueue));
+
+    this.scheduler.addTask(() => {
+      this.messageQueue.consume();
+    });
+    this.scheduler.addTask(() => {
+      this.world.runSystems(SYSTEM_GROUP_FRAME);
+    });
+    this.scheduler.addTask(() => {
+      this.hud.render();
+    });
   }
 
   run() {
     this.initialize();
-    const scheduler = this.container.resolve('Scheduler');
-    scheduler.start();
-  }
-  
-  initialize() {
-    // Screen
-    const screen = this.container.resolve('Screen');
-    screen.initialize();
-    
-    // Input
-    const keybinder = this.container.resolve('KeyBinder');
-    keybinder.initialize();
-
-    // Initialize map
-    const mapManager = this.container.resolve('MapManager');
-    mapManager.createMap();
-    DungeonGenerator.digger(mapManager.getMap());
-    
-    // Initialize player
-    const entityManager = this.container.resolve('EntityManager');
-    const entityFactory = this.container.resolve('EntityFactory');
-    const [playerStartingX, playerStartingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
-    entityManager.createEntity('player', entityFactory.create('player', {
-      position: { x: playerStartingX, y: playerStartingY },
-      visibility: { radius: 10 },
-    }));
-    entityManager.addTags('player', ['followWithCamera']);
-    const eventQueue = this.container.resolve('EventQueue');
-    eventQueue.addConsumer(this.container.resolve('PlayerController'));
-
-    // Initialize some mobs
-    for (let i = 0; i < 5; i++) {
-      const [startingX, startingY] = DungeonGenerator.randomStartingPosition(mapManager.getMap());
-      entityManager.createEntity('mob'+i, entityFactory.create('mob', { position: { x: startingX, y: startingY }, ai: { algorithm: 'Fiend' } }));
-      entityManager.addTags('mob'+i, ['mob']);
-      console.log('>New mob %d , %d', startingX, startingY)
-    }
-
-    // === Tasks ===
-    const scheduler = this.container.resolve('Scheduler');
-    // AI turn
-    const mobAiSystem = this.container.resolve('MobAiSystem');
-    this.tasks.aiTurn = scheduler.addTask(
-      mobAiSystem.update.bind(mobAiSystem)
-    );
-    // Handle events
-    this.tasks.consumeEvents = scheduler.addTask(
-      eventQueue.consume.bind(eventQueue)
-    );
-    // Detect collisions
-    const collisionDetector = this.container.resolve('CollisionDetector');
-    this.tasks.collisionDetect = scheduler.addTask(
-      collisionDetector.update.bind(collisionDetector)
-      );
-    // Resolve collisions
-    const collisionResolver = this.container.resolve('CollisionResolver');
-    this.tasks.collisionResolve = scheduler.addTask(
-      collisionResolver.update.bind(collisionResolver)
-    );
-    // Calculate visibility and FOV
-    const visibilitySystem = this.container.resolve('VisibilitySystem');
-    this.tasks.visibilitySystem = scheduler.addTask(
-      visibilitySystem.update.bind(visibilitySystem)
-    );
-    // Render
-    this.tasks.render = scheduler.addTask(
-      screen.render.bind(screen)
-    );
-    // === Tasks ===
-    
-    // ...
+    this.scheduler.start();
   }
 }
 

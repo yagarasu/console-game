@@ -8,6 +8,7 @@
     "serve": "webpack serve --mode=development"
   },
   "dependencies": {
+    "ape-ecs": "^1.3.1",
     "awilix": "^4.3.4",
     "rot-js": "^2.1.5"
   },
