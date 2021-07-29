@@ -12,6 +12,7 @@ import {
   MovementSystem,
   VisionSystem,
   AISystem,
+  ProximitySystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -45,6 +46,7 @@ class Game {
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
+    this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 
@@ -116,12 +118,16 @@ class Game {
         {
           type: 'Stats',
           key: 'Stats',
+        },
+        {
+          type: 'ProximityClient',
+          key: 'ProximityClient',
         }
       ]
     });
     
     this.world.createEntity({
-      id: 'stuff',
+      id: 'portal',
       tags: ['FOVAlly'],
       components: [
         {
@@ -131,11 +137,16 @@ class Game {
           y: playerStartingY,
         },
         {
-          type: 'StaticSprite',
-          key: 'StaticSprite',
-          ch: 'ü',
-          fg: '#0f0',
+          type: 'AnimatedSprite',
+          key: 'AnimatedSprite',
+          frames: ['\u233A', '\u233B', '\u233C'],
+          fg: '#ee5757',
+          bg: '#631f1f'
         },
+        {
+          type: 'ProximityTrigger',
+          key: 'ProximityTrigger',
+        }
       ]
     });
 

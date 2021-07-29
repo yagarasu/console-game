@@ -7,3 +7,5 @@ export { default as Tilemap } from './rendering/Tilemap';
 export { default as Vision } from './Vision';
 export { default as AI } from './AI';
 export { default as Stats } from './Stats';
+export { default as ProximityClient } from './ProximityClient';
+export { default as ProximityTrigger } from './ProximityTrigger';
