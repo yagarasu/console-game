@@ -6,3 +6,4 @@ export { default as Viewport } from './rendering/Viewport';
 export { default as Tilemap } from './rendering/Tilemap';
 export { default as Vision } from './Vision';
 export { default as AI } from './AI';
+export { default as Stats } from './Stats';

@@ -17,6 +17,7 @@ import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
 import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
+import HUDRenderer from 'core/HUD/HUDRenderer';
 import navKeyBinding from 'data/navKeyBinding';
 
 class Game {
@@ -26,6 +27,7 @@ class Game {
     this.screen = new Screen();
     this.mapManager = new MapManager();
     this.messageQueue = new MessageQueue();
+    this.hud = new HUDRenderer(this);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
   }
@@ -106,6 +108,10 @@ class Game {
           type: 'Vision',
           key: 'Vision',
           sight: 5
+        },
+        {
+          type: 'Stats',
+          key: 'Stats',
         }
       ]
     });
@@ -132,37 +138,42 @@ class Game {
     for (let i = 0; i < 10; i++) {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
       this.world.createEntity({
-      id: 'mob-' + i,
-      components: [
-        {
-          type: 'Position',
-          key: 'Position',
-          x: mobx,
-          y: moby,
-        },
-        {
-          type: 'StaticSprite',
-          key: 'StaticSprite',
-          ch: '\u263B',
-          fg: '#6a9f9d',
-        },
-        {
-          type: 'Movable',
-          key: 'Movable',
-        },
-        {
-          type: 'AI',
-          algorithm: 'fiend',
-        }
-      ]
-    });
+        id: 'mob-' + i,
+        components: [
+          {
+            type: 'Position',
+            key: 'Position',
+            x: mobx,
+            y: moby,
+          },
+          {
+            type: 'StaticSprite',
+            key: 'StaticSprite',
+            ch: '\u263B',
+            fg: '#6a9f9d',
+          },
+          {
+            type: 'Movable',
+            key: 'Movable',
+          },
+          {
+            type: 'AI',
+            algorithm: 'fiend',
+          }
+        ]
+      });
     }
+
+    this.hud.initialize();
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();
     });
     this.scheduler.addTask(() => {
       this.world.runSystems(SYSTEM_GROUP_FRAME);
+    });
+    this.scheduler.addTask(() => {
+      this.hud.render();
     });
   }
 
