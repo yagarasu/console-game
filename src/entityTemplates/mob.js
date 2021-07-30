@@ -29,6 +29,10 @@ export default function mainCamera(id, x, y) {
       {
         type: 'Collidable',
         key: 'Collidable',
+      },
+      {
+        type: 'DamageInducer',
+        key: 'DamageInducer',
       }
     ]
   };

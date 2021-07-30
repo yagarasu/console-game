@@ -10,3 +10,4 @@ export { default as Stats } from './Stats';
 export { default as ProximityClient } from './ProximityClient';
 export { default as ProximityTrigger } from './ProximityTrigger';
 export { default as Collidable } from './Collidable';
+export { default as DamageInducer } from './DamageInducer';

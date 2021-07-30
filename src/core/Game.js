@@ -14,6 +14,7 @@ import {
   AISystem,
   ProximitySystem,
   CollisionDetectorSystem,
+  DamageSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -54,6 +55,7 @@ class Game {
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
+    this.world.registerSystem(DamageSystem.group, DamageSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 
@@ -86,7 +88,7 @@ class Game {
     this.world.createEntity(mainCamera('camera', playerStartingX, playerStartingY, this.screen));
     this.world.createEntity(player('player', playerStartingX, playerStartingY));
     this.world.createEntity(portal('portal', playerStartingX, playerStartingY));
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 50; i++) {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
       this.world.createEntity(mob('mob-' + i, mobx, moby));
     }

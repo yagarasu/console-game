@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid'
+
 class MessageQueue {
   constructor() {
     this.messages = [];
@@ -13,7 +15,8 @@ class MessageQueue {
   }
 
   enqueue(message) {
-    this.messages.unshift(message);
+    const uuid = uuidv4();
+    this.messages.unshift({ uuid, ...message });
   }
 
   runConsumerPipeline(message) {
