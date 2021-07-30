@@ -1,6 +1,7 @@
 export default function mainCamera(id, x, y) {
   return {
     id,
+    tags: ['FOVAlly'],
     components: [
       {
         type: 'Position',
@@ -31,8 +32,12 @@ export default function mainCamera(id, x, y) {
         key: 'Collidable',
       },
       {
-        type: 'DamageInducer',
-        key: 'DamageInducer',
+        type: 'ProximityDamageInducer',
+        key: 'ProximityDamageInducer',
+      },
+      {
+        type: 'MobStats',
+        key: 'MobStats',
       }
     ]
   };

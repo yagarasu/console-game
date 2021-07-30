@@ -1,4 +1,4 @@
-const INDICATOR_COUNT = 10;
+const INDICATOR_COUNT = 5;
 
 class EnergyGauge {
   constructor (player) {
@@ -15,7 +15,7 @@ class EnergyGauge {
     const stats = this.player.getOne('Stats');
     const indicatorFocus = this.getIndicator(stats.focus);
     const indicatorEnergy = this.getIndicator(stats.energy);
-    display.drawText(80 - 35, 24, `%c{grey}Focus[%c{#7a31ae}${indicatorFocus}%c{grey}]Energy[%c{#3893b6}${indicatorEnergy}%c{grey}]`);
+    display.drawText(80 - 35, 24, `%c{grey}Focus[%c{#7a31ae}${indicatorFocus}%c{grey}](${stats.focus})Energy[%c{#3893b6}${indicatorEnergy}%c{grey}](${stats.energy})`);
   }
 }
 

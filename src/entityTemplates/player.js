@@ -1,7 +1,7 @@
 export default function mainCamera(id, startingx, startingy) {
   return {
     id,
-    tags: ['FollowWithMainCamera', 'MoveWithKeyboard', 'FOVAlly', 'DamageTaker'],
+    tags: ['FollowWithMainCamera', 'MoveWithKeyboard', 'FOVAlly'],
     components: [
       {
         type: 'Position',

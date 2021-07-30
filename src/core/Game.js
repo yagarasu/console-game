@@ -14,7 +14,7 @@ import {
   AISystem,
   ProximitySystem,
   CollisionDetectorSystem,
-  DamageSystem,
+  ProximityDamageSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -55,7 +55,7 @@ class Game {
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
-    this.world.registerSystem(DamageSystem.group, DamageSystem, [this.messageQueue]);
+    this.world.registerSystem(ProximityDamageSystem.group, ProximityDamageSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 

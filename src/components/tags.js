@@ -3,5 +3,4 @@ export default [
   'FollowWithMainCamera',
   'MoveWithKeyboard',
   'FOVAlly',
-  'DamageTaker',
 ];
