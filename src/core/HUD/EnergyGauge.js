@@ -1,14 +1,20 @@
 const INDICATOR_COUNT = 5;
 
+const STR_CIRCLE_FULL = '\u25C9'; // ◉
+const STR_CIRCLE_HALF = '\u25CE'; // ◎
+const STR_CIRCLE_EMPTY = '\u25CB'; // ○
+
 class EnergyGauge {
   constructor (player) {
     this.player = player;
   }
 
   getIndicator(value) {
-    const amount = Math.round((value / 100) * INDICATOR_COUNT);
-    const rest = INDICATOR_COUNT - amount;
-    return '\u25C9'.repeat(amount) + '\u25CB'.repeat(rest);
+    const amount = (value / 100) * INDICATOR_COUNT;
+    const amountFull = Math.floor(amount);
+    const amountHalf = Math.ceil(amount % 1);
+    const rest = INDICATOR_COUNT - (amountFull + amountHalf);
+    return STR_CIRCLE_FULL.repeat(amountFull) + STR_CIRCLE_HALF.repeat(amountHalf) + STR_CIRCLE_EMPTY.repeat(rest);
   }
 
   render({ display }) {
