@@ -35,6 +35,11 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'Collidable',
         key: 'Collidable',
+      },
+      {
+        type: 'Equipment',
+        key: 'Equipment',
+        primary: 'banishing'
       }
     ]
   };

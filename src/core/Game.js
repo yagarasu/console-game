@@ -15,6 +15,8 @@ import {
   ProximitySystem,
   CollisionDetectorSystem,
   ProximityDamageSystem,
+  CastingSystem,
+  DeathSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -22,6 +24,7 @@ import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
 import navKeyBinding from 'data/navKeyBinding';
 import menuKeyBinding from 'data/menuKeyBinding';
+import actionKeyBinding from 'data/actionKeyBinding';
 import HUDRenderer from 'core/HUD/HUDRenderer';
 import EnergyGauge from 'core/HUD/EnergyGauge';
 import PlayerMenu from 'core/HUD/PlayerMenu';
@@ -42,6 +45,7 @@ class Game {
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
     this.keyBinder.addBinding('menu', menuKeyBinding);
+    this.keyBinder.addBinding('action', actionKeyBinding);
   }
 
   initialize() {
@@ -50,12 +54,14 @@ class Game {
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
+    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue]);
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
     this.world.registerSystem(ProximityDamageSystem.group, ProximityDamageSystem, [this.messageQueue]);
+    this.world.registerSystem(DeathSystem.group, DeathSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 

@@ -8,3 +8,5 @@ export { default as AISystem } from './AISystem';
 export { default as ProximitySystem } from './ProximitySystem';
 export { default as CollisionDetectorSystem } from './CollisionDetectorSystem';
 export { default as ProximityDamageSystem } from './ProximityDamageSystem';
+export { default as CastingSystem } from './CastingSystem';
+export { default as DeathSystem } from './DeathSystem';

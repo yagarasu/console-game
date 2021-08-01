@@ -3,4 +3,6 @@ export default [
   'FollowWithMainCamera',
   'MoveWithKeyboard',
   'FOVAlly',
+  'Enemy',
+  'Dead',
 ];

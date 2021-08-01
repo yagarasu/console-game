@@ -1,7 +1,7 @@
 export default function mainCamera(id, x, y) {
   return {
     id,
-    tags: ['FOVAlly'],
+    tags: ['FOVAlly', 'Enemy'],
     components: [
       {
         type: 'Position',

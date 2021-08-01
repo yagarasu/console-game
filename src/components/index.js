@@ -12,3 +12,4 @@ export { default as ProximityTrigger } from './ProximityTrigger';
 export { default as Collidable } from './Collidable';
 export { default as ProximityDamageInducer } from './ProximityDamageInducer';
 export { default as MobStats } from './MobStats';
+export { default as Equipment } from './Equipment';

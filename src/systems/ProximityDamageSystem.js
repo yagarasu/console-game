@@ -13,7 +13,7 @@ class ProximityDamageSystem extends System {
     return next => message => {
       if (message.type == 'COLLISION_EVT') {
         const { subject, object } = message.data;
-        if(subject.has('ProximityDamageInducer') && object.has('Stats')) {
+        if(subject.has('ProximityDamageInducer') && !subject.has('Dead') && object.has('Stats')) {
           const { energyDamage, focusDamage } = subject.getOne('ProximityDamageInducer');
           const stats = object.getOne('Stats');
           stats.update({

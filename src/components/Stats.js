@@ -4,6 +4,7 @@ class Stats extends Component {
   static properties = {
     energy: 100,
     focus: 100,
+    will: 40,
   }
 }
 
