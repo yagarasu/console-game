@@ -17,6 +17,7 @@ import {
   ProximityDamageSystem,
   CastingSystem,
   DeathSystem,
+  ItemSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -33,6 +34,7 @@ import mainCamera from 'entityTemplates/mainCamera';
 import player from 'entityTemplates/player';
 import mob from 'entityTemplates/mob';
 import portal from 'entityTemplates/portal';
+import halitus from 'entityTemplates/halitus';
 
 class Game {
   constructor() {
@@ -41,7 +43,7 @@ class Game {
     this.screen = new Screen();
     this.mapManager = new MapManager();
     this.messageQueue = new MessageQueue();
-    this.hud = new HUDRenderer(this.screen);
+    this.hud = new HUDRenderer(this.screen, this.world);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
     this.keyBinder.addBinding('menu', menuKeyBinding);
@@ -60,6 +62,7 @@ class Game {
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
+    this.world.registerSystem(ItemSystem.group, ItemSystem, [this.messageQueue]);
     this.world.registerSystem(ProximityDamageSystem.group, ProximityDamageSystem, [this.messageQueue]);
     this.world.registerSystem(DeathSystem.group, DeathSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
@@ -98,9 +101,13 @@ class Game {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
       this.world.createEntity(mob('mob-' + i, mobx, moby));
     }
+    for (let i = 0; i < 50; i++) {
+      const [itemx, itemy] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
+      this.world.createEntity(halitus('hal-' + i, itemx, itemy));
+    }
 
     this.hud.addComponent('playerStats', new EnergyGauge(this.world.getEntity('player')));
-    this.hud.addComponent('playerMenu', new PlayerMenu(this.messageQueue));
+    this.hud.addComponent('playerMenu', new PlayerMenu(this.messageQueue, this.world.getEntity('player')));
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();

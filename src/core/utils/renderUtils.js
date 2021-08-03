@@ -16,3 +16,18 @@ export function drawBox(display, x, y, w, h) {
   }
   display.drawText(x, y + h, bottom);
 }
+
+export function viewport(display, content, x, y, w, h, offsetx = 0, offsety = 0) {
+  const numLines = content.length > h ? h : content.length;
+  for (let i = 0; i < numLines; i++) {
+    const line = content[offsety + i] ? content[offsety + i].substr(offsetx, w) : '';
+    display.drawText(x, y + i, line);
+  }
+}
+
+export function selectmenu(display, items, selected, selector, blank, x, y, w, h) {
+  const fullHeight = items.length < h ? items.length : h;
+  const offsety = selected + 1 < fullHeight ? 0 : (selected + 1) - fullHeight;
+  const contentWithSelector = items.map((item, i) => i == selected ? `${selector}${item}` : blank.repeat(selector.length) + item);
+  viewport(display, contentWithSelector, x, y, w, h, undefined, offsety);
+}

@@ -10,8 +10,8 @@ class RenderSystem extends System {
     this.screen = screen;
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
     this.map = this.createQuery().fromAll('Tilemap');
-    this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite');
-    this.animatedSprites = this.createQuery().fromAll('Position', 'AnimatedSprite');
+    this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite').persist();
+    this.animatedSprites = this.createQuery().fromAll('Position', 'AnimatedSprite').persist();
     this.fovAllies = this.createQuery().fromAll('FOVAlly', 'Vision');
   }
 

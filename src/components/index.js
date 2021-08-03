@@ -13,3 +13,5 @@ export { default as Collidable } from './Collidable';
 export { default as ProximityDamageInducer } from './ProximityDamageInducer';
 export { default as MobStats } from './MobStats';
 export { default as Equipment } from './Equipment';
+export { default as InventoryHolder } from './InventoryHolder';
+export { default as Collectable } from './Collectable';
