@@ -1,5 +1,6 @@
 import { System } from "ape-ecs";
 import { SYSTEM_GROUP_NONE } from "systems/groups";
+import items from 'data/items';
 
 class ItemSystem extends System {
   static group = SYSTEM_GROUP_NONE;
@@ -21,6 +22,12 @@ class ItemSystem extends System {
           });
           object.destroy();
         }
+      }
+      if (message.type == 'ITEM_USE') {
+        const { item: { id } } = message.data;
+        const item = items.find(item => item.id == id);
+        if (!item) throw new Error(`Item "${id}" not found.`);
+        item.onUse(this.world.getEntity('player'));
       }
       next();
     };

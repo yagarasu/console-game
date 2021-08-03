@@ -30,7 +30,13 @@ class PlayerMenu {
         }
       }
       if (message.type === 'MENU_SELECT_CMD' && this.currentMenu !== null) {
-        console.log('TRIGGER HANDLER FOR', this.selectMenuIdx);
+        const inventory = this.player.getOne('InventoryHolder');
+        const { bag } = inventory;
+        const item = bag[this.selectMenuIdx];
+        this.messageQueue.enqueue({ type: 'ITEM_USE', data: { item } });
+        inventory.update({
+          bag: bag.splice(this.selectMenuIdx, 1),
+        });
       }
       return next();
     }
