@@ -28,7 +28,9 @@ class PlayerMenu {
         } else if (message.data.dir === 'DOWN' && this.selectMenuIdx < this.selectMenuMax) {
           this.selectMenuIdx++;
         }
-        console.log(this.selectMenuIdx);
+      }
+      if (message.type === 'MENU_SELECT_CMD' && this.currentMenu !== null) {
+        console.log('TRIGGER HANDLER FOR', this.selectMenuIdx);
       }
       return next();
     }
@@ -93,10 +95,10 @@ class PlayerMenu {
     display.drawText(3, 1, '\u263F Inventory \u263F');
     const { bag } = this.player.getOne('InventoryHolder');
     const itemNames = bag.map(({ name }) => name);
+    // const itemNames = [
+    //   'Foo'
+    // ];
     selectmenu(display, itemNames, this.selectMenuIdx, '\u25B6', '\u2022', 2, 3, 16, 3);
-    // selectmenu(display, content, this.inventorySelectedItem, '\u25B6', '\u2022', 2, 3, 16, 19);
-    // selectmenu(display, content, 2, 3, 16, 19)
-    // display.drawText(2, 3, '\u269D Banish');
   }
 }
 
