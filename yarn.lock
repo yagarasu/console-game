@@ -3044,6 +3044,11 @@ toidentifier@1.0.0:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
+tracery-grammar@^2.7.4:
+  version "2.7.4"
+  resolved "https://registry.yarnpkg.com/tracery-grammar/-/tracery-grammar-2.7.4.tgz#241780cd205d846a88729f7fbffa6777ac13e8cd"
+  integrity sha512-oFSEconWOSh73kYSkqU137OYa/7+UCohel6wEFHgNh2ito9lDmitz5xr9IU0OIrxjo7UPSdFMzgKAp1c/lsi6A==
+
 tslib@^2.0.3:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.3.0.tgz#803b8cdab3e12ba581a4ca41c8839bbb0dacb09e"
