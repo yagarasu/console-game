@@ -44,6 +44,11 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'InventoryHolder',
         key: 'InventoryHolder',
+      },
+      {
+        type: 'ParticleEmitter',
+        key: 'ParticleEmitter',
+        lastUpdated: performance.now(),
       }
     ]
   };

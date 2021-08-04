@@ -18,6 +18,7 @@ import {
   CastingSystem,
   DeathSystem,
   ItemSystem,
+  ParticlesSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -60,6 +61,7 @@ class Game {
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
+    this.world.registerSystem(ParticlesSystem.group, ParticlesSystem);
     this.world.registerSystem(ProximitySystem.group, ProximitySystem);
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
     this.world.registerSystem(ItemSystem.group, ItemSystem, [this.messageQueue]);

@@ -15,3 +15,4 @@ export { default as MobStats } from './MobStats';
 export { default as Equipment } from './Equipment';
 export { default as InventoryHolder } from './InventoryHolder';
 export { default as Collectable } from './Collectable';
+export { default as ParticleEmitter } from './ParticleEmitter';
