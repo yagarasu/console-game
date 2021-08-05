@@ -24,6 +24,7 @@ import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
 import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
+import EffectManager from 'core/EffectManager';
 import navKeyBinding from 'data/navKeyBinding';
 import menuKeyBinding from 'data/menuKeyBinding';
 import actionKeyBinding from 'data/actionKeyBinding';
@@ -44,6 +45,7 @@ class Game {
     this.screen = new Screen();
     this.mapManager = new MapManager();
     this.messageQueue = new MessageQueue();
+    this.effectManager = new EffectManager(this.messageQueue, this.world);
     this.hud = new HUDRenderer(this.screen, this.world);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
@@ -113,6 +115,9 @@ class Game {
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();
+    });
+    this.scheduler.addTask(() => {
+      this.effectManager.update();
     });
     this.scheduler.addTask(() => {
       this.world.runSystems(SYSTEM_GROUP_FRAME);
