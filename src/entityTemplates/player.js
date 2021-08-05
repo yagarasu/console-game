@@ -1,4 +1,4 @@
-import { randomVectorOfRandomMagnitudeBetween } from "core/utils/mathUtils";
+import airForce from 'systems/particleForces/airForce';
 
 export default function mainCamera(id, startingx, startingy) {
   return {
@@ -51,12 +51,12 @@ export default function mainCamera(id, startingx, startingy) {
         type: 'ParticleEmitter',
         key: 'ParticleEmitter',
         lastUpdated: performance.now(),
-        forces: [() => randomVectorOfRandomMagnitudeBetween(0, 2)],
-        maxParticles: 20,
-        particlesPerSecond: 20,
-        particleLife: 64,
-        maxVelocity: 5,
-        particleSize: [3, 1],
+        forces: [airForce(-90, 0.5, 0.5)],
+        maxParticles: 50,
+        particlesPerSecond: 10,
+        particleLife: 24,
+        maxVelocity: 3,
+        particleSize: [5, 2],
         blendingMode: 'screen',
         colors: ['#162385', '#94dbf6'],
       }

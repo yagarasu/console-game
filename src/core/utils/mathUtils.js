@@ -1,5 +1,7 @@
 import { RNG } from "rot-js";
 
+export const TAU = Math.PI * 2;
+
 export function randomBetween(min, max) {
   return (RNG.getUniform() * (max - min)) + min;
 }
@@ -57,4 +59,11 @@ export function clampVector(x, y, maxMagnitude) {
 
 export function lerp(min, max, factor) {
   return min * (1 - factor) + max * factor;
+}
+
+export function vectorFromAngle(angle) {
+  return [
+    Math.cos(angle * (TAU / 360)),
+    Math.sin(angle * (TAU / 360))
+  ];
 }

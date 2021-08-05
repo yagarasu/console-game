@@ -30,14 +30,9 @@ class ParticlesSystem extends System {
   }
 
   applyForces(x, y, forces) {
-    const forceStrategies = {
-      random: () => randomVectorOfRandomMagnitudeBetween(0, 2),
-    };
     return forces.reduce(([x, y], force) => {
       let vect = force;
-      if (typeof force === 'string') {
-        vect = (forceStrategies[force] ?? (() => [0, 0]))(x, y);
-      } else if (typeof force === 'function') {
+      if (typeof force === 'function') {
         vect = force(x, y);
       }
       return this.applyForce(x, y, vect);
