@@ -1,21 +1,24 @@
 import { System } from "ape-ecs";
 import { SYSTEM_GROUP_FRAME } from "systems/groups";
 import { clampVector } from "core/utils/mathUtils";
+import Camera from "core/Camera";
 
 class ParticlesSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
-  init() {
+  init(screen) {
+    this.screen = screen;
     this.entities = this.createQuery().fromAll('ParticleEmitter').persist();
+    this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
   }
 
-  createParticle(ttl) {
+  createParticle(ttl, x, y) {
     return {
       life: 0,
       lifePercent: 0,
       ttl,
-      x: 0,
-      y: 0,
+      x,
+      y,
       vx: 0,
       vy: 0,
       ax: 0,
@@ -53,7 +56,8 @@ class ParticlesSystem extends System {
   }
 
   updateEmiter(tick, entity, emitter) {
-    // const emitter = entity.getOne('ParticleEmitter');
+    const { x: tx, y: ty } = entity.getOne('Position');
+    const [x, y] = this.screen.getTileCenter(tx, ty);
     const {
       lastUpdated,
       maxParticles,
@@ -69,15 +73,21 @@ class ParticlesSystem extends System {
     const newParticleCount = maxParticles - (particles.length + newParticlesOnTick)
     if (newParticleCount > 0) {
       for (let i = 0; i < newParticleCount * delta; i++) {
-        particles.push(this.createParticle(particleLife));
+        particles.push(this.createParticle(particleLife, x, y));
       }
     }
     emitter.update({ particles, lastUpdated: performance.now() });
   }
 
   update(tick) {
+    const cameraData = this.camera.execute();
+    const [mainCameraData] = cameraData.values();
+    const { x, y, width, height } = mainCameraData.getOne('Viewport');
+    const camera = new Camera(this.screen, { x, y, width, height });
     const entities = this.entities.execute();
     for (const entity of entities) {
+      const { x: ex, y: ey } = entity.getOne('Position');
+      if (!camera.globalIsVisible(ex, ey)) continue;
       const emitters = entity.getComponents('ParticleEmitter');
       for (const emitter of emitters) {
         this.updateEmiter(tick, entity, emitter);

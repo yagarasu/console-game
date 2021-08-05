@@ -1,3 +1,5 @@
+import { airForce } from 'systems/particleForces';
+
 export default function mainCamera(id, x, y) {
   return {
     id,
@@ -19,6 +21,18 @@ export default function mainCamera(id, x, y) {
       {
         type: 'Collidable',
         key: 'Collidable',
+      },
+      {
+        type: 'ParticleEmitter',
+        lastUpdated: performance.now(),
+        forces: [airForce(-90, 0.5, 0.5)],
+        maxParticles: 64,
+        particlesPerSecond: 1,
+        particleLife: 32,
+        maxVelocity: 1,
+        particleSize: [2, 1],
+        blendingMode: 'screen',
+        colors: ['#162385', '#94dbf6'],
       }
     ]
   };

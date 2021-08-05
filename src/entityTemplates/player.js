@@ -1,5 +1,3 @@
-import { airForce, randomForce } from 'systems/particleForces';
-
 export default function mainCamera(id, startingx, startingy) {
   return {
     id,
@@ -46,18 +44,6 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'InventoryHolder',
         key: 'InventoryHolder',
-      },
-      {
-        type: 'ParticleEmitter',
-        lastUpdated: performance.now(),
-        forces: [airForce(-90, 0.5, 0.5)],
-        maxParticles: 50,
-        particlesPerSecond: 10,
-        particleLife: 24,
-        maxVelocity: 3,
-        particleSize: [5, 2],
-        blendingMode: 'screen',
-        colors: ['#162385', '#94dbf6'],
       }
     ]
   };

@@ -5,6 +5,10 @@ class Screen {
     this.display = new Display({
       fontSize: 24,
     });
+    const { width: optWidth, height: optHeight } = this.display.getOptions();
+    const canvas = this.display.getContainer();
+    const { width: canvWidth, height: canvHeight } = canvas;
+    this.tileSize = [canvWidth / optWidth, canvHeight / optHeight];
   }
 
   initialize() {
@@ -13,6 +17,18 @@ class Screen {
 
   getDisplay() {
     return this.display;
+  }
+
+  getTileSize() {
+    return this.tileSize;
+  }
+
+  getTileCenter(tx, ty) {
+    const [tw, th] = this.getTileSize();
+    return [
+      (tx * tw) + (tw / 2),
+      (ty * th) + (th / 2)
+    ];
   }
 }
 

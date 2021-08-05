@@ -9,7 +9,6 @@ class RenderSystem extends System {
 
   init(screen) {
     this.screen = screen;
-    this.tileSize = this.computeTileSize();
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
     this.map = this.createQuery().fromAll('Tilemap');
     this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite').persist();
@@ -141,7 +140,6 @@ class RenderSystem extends System {
   }
 
   renderParticles(tick, camera) {
-    const [tileWidth, tileHeight] = this.tileSize;
     const display = this.screen.getDisplay();
     const canvas = display.getContainer();
     const ctx = canvas.getContext('2d');
@@ -150,17 +148,14 @@ class RenderSystem extends System {
       const position = entity.getOne('Position');
       const { x: gx, y: gy } = position;
       if (!camera.globalIsVisible(gx, gy)) continue;
-      const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
-      const emitterx = (lx * tileWidth) + (tileWidth / 2);
-      const emittery = (ly * tileHeight) + (tileHeight / 2);
       ctx.save();
-      ctx.translate(emitterx, emittery);
       const emitters = entity.getComponents('ParticleEmitter');
       for (const emitter of emitters) {
         const { particles, particleSize, colors, blendingMode } = emitter;
         const [particleSizeMin, particleSizeMax] = particleSize;
         for (const particle of particles) {
           const { x: px, y: py, lifePercent } = particle;
+          const [lx, ly] = camera.transformGlobalPxToLocalPx(px, py);
           const size = Math.round(lerp(particleSizeMin, particleSizeMax, lifePercent));
           const color = Color.interpolate(Color.fromString(colors[0]), Color.fromString(colors[1]), lifePercent);
           ctx.fillStyle = Color.toHex(color);
@@ -168,7 +163,7 @@ class RenderSystem extends System {
             ctx.globalCompositeOperation = blendingMode;
           }
           ctx.beginPath();
-          ctx.arc(px, py, size, 0, Math.PI * 2);
+          ctx.arc(lx, ly, size, 0, Math.PI * 2);
           ctx.fill();
         }
       }
