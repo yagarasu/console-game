@@ -27,5 +27,33 @@ export default [
         }
       };
     }
+  },
+
+  {
+    test: ({ type }) => type === 'PROXIMITY_DAMAGE_EVT',
+    buildEffect: ({ data }) => {
+      const { object } = data;
+      let particles = null;
+      return {
+        removeAt: performance.now() + 250,
+        onEnqueue: () => {
+          particles = object.addComponent({
+            type: 'ParticleEmitter',
+            lastUpdated: performance.now(),
+            forces: [randomForce(5,10)],
+            maxParticles: 50,
+            particlesPerSecond: 20,
+            particleLife: 8,
+            maxVelocity: 5,
+            particleSize: [3, 5],
+            blendingMode: 'screen',
+            colors: ['#6a9f9d', '#C3D8D7'],
+          });
+        },
+        onRemove: () => {
+          object.removeComponent(particles);
+        }
+      };
+    }
   }
 ];
