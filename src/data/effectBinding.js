@@ -53,5 +53,32 @@ export default [
         }
       };
     }
+  },
+
+  {
+    test: ({ type }) => type === 'ENTITY_DEAD_EVT',
+    buildEffect: ({ data }) => {
+      const { entity } = data;
+      let particles = null;
+      return {
+        removeAt: performance.now() + 1000,
+        onEnqueue: () => {
+          particles = entity.addComponent({
+            type: 'ParticleEmitter',
+            forces: [airForce(-90, 1, 2)],
+            maxParticles: 10,
+            particlesPerSecond: 1,
+            particleLife: 64,
+            maxVelocity: 2,
+            particleSize: [15, 2],
+            blendingMode: 'screen',
+            colors: ['#396494', '#d0e6ff'],
+          });
+        },
+        onRemove: () => {
+          entity.removeComponent(particles);
+        }
+      };
+    }
   }
 ];
