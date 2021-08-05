@@ -1,3 +1,5 @@
+import { airForce } from 'systems/particleForces';
+
 export default function mainCamera(id, x, y) {
   return {
     id,

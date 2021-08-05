@@ -2,6 +2,7 @@ import { Color } from "rot-js";
 import { System } from "ape-ecs";
 import Camera from "core/Camera";
 import { SYSTEM_GROUP_FRAME } from "systems/groups";
+import { lerp } from 'core/utils/mathUtils';
 
 class RenderSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
@@ -12,7 +13,15 @@ class RenderSystem extends System {
     this.map = this.createQuery().fromAll('Tilemap');
     this.staticSprites = this.createQuery().fromAll('Position', 'StaticSprite').persist();
     this.animatedSprites = this.createQuery().fromAll('Position', 'AnimatedSprite').persist();
+    this.particleEmitters = this.createQuery().fromAll('Position', 'ParticleEmitter').persist();
     this.fovAllies = this.createQuery().fromAll('FOVAlly', 'Vision');
+  }
+
+  computeTileSize() {
+    const { width: optWidth, height: optHeight } = this.screen.getDisplay().getOptions();
+    const canvas = this.screen.getDisplay().getContainer();
+    const { width: canvWidth, height: canvHeight } = canvas;
+    return [canvWidth / optWidth, canvHeight / optHeight];
   }
 
   update(tick) {
@@ -30,6 +39,7 @@ class RenderSystem extends System {
     this.renderTilemap(tick, camera, sharedFov);
     this.renderStaticSprites(tick, camera, sharedFov);
     this.renderAnimatedSprites(tick, camera, sharedFov);
+    this.renderParticles(tick, camera);
   }
 
   calculateSharedFov() {
@@ -126,6 +136,38 @@ class RenderSystem extends System {
         sprite.ticks++;
       }
       sprite.update();
+    }
+  }
+
+  renderParticles(tick, camera) {
+    const display = this.screen.getDisplay();
+    const canvas = display.getContainer();
+    const ctx = canvas.getContext('2d');
+    const entities = this.particleEmitters.execute();
+    for (const entity of entities) {
+      const position = entity.getOne('Position');
+      const { x: gx, y: gy } = position;
+      if (!camera.globalIsVisible(gx, gy)) continue;
+      ctx.save();
+      const emitters = entity.getComponents('ParticleEmitter');
+      for (const emitter of emitters) {
+        const { particles, particleSize, colors, blendingMode } = emitter;
+        const [particleSizeMin, particleSizeMax] = particleSize;
+        for (const particle of particles) {
+          const { x: px, y: py, lifePercent } = particle;
+          const [lx, ly] = camera.transformGlobalPxToLocalPx(px, py);
+          const size = Math.round(lerp(particleSizeMin, particleSizeMax, lifePercent));
+          const color = Color.interpolate(Color.fromString(colors[0]), Color.fromString(colors[1]), lifePercent);
+          ctx.fillStyle = Color.toHex(color);
+          if (blendingMode) {
+            ctx.globalCompositeOperation = blendingMode;
+          }
+          ctx.beginPath();
+          ctx.arc(lx, ly, size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.restore();
     }
   }
 

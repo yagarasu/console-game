@@ -11,3 +11,4 @@ export { default as ProximityDamageSystem } from './ProximityDamageSystem';
 export { default as CastingSystem } from './CastingSystem';
 export { default as DeathSystem } from './DeathSystem';
 export { default as ItemSystem } from './ItemSystem';
+export { default as ParticlesSystem } from './ParticlesSystem';

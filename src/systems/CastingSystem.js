@@ -5,7 +5,8 @@ import spells from 'data/spells';
 class CastingSystem extends System {
   static group = SYSTEM_GROUP_NONE;
 
-  init(messageQueue) {
+  init(messageQueue, effectManager) {
+    this.effectManager = effectManager;
     this.messageQueue = messageQueue;
     this.messageQueue.addConsumer(this.consumer.bind(this));
   }
@@ -18,7 +19,7 @@ class CastingSystem extends System {
         const spell = spells.find(({ id }) => primary);
         if (!spell) return next();
         const { onCast } = spell;
-        onCast(spell, player, this.world);
+        onCast(spell, player, this.world, this.effectManager);
       }
       next();
     };

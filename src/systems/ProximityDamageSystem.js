@@ -20,6 +20,7 @@ class ProximityDamageSystem extends System {
             energy: stats.energy - energyDamage,
             focus: stats.focus - focusDamage,
           });
+          this.messageQueue.enqueue({ type: 'PROXIMITY_DAMAGE_EVT', data: { subject, object, damage: { energyDamage, focusDamage } } });
         }
       }
       next();

@@ -5,7 +5,7 @@ class Collectable extends Component {
     item: {
       id: null,
       onCollect: null,
-      onActivate: null
+      onActivate: null,
     }
   }
 }

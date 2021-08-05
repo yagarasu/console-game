@@ -6,6 +6,6 @@ game.run();
 // setTimeout(() => {
 //   game.scheduler.stop();
 //   console.log('!!!STOP!!!')
-// }, 5000);
+// }, 1000);
 
 window.game = game;

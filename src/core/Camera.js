@@ -14,9 +14,23 @@ class Camera {
     ];
   }
 
+  transformGlobalPxToLocalPx(gx, gy) {
+    const [tw, th] = this.screen.getTileSize();
+    return [
+      gx - (this.x * tw),
+      gy - (this.y * th)
+    ];
+  }
+
   globalIsVisible(gx, gy) {
     const [lx, ly] = this.transformGlobalToLocal(gx, gy);
-    return (lx >= 0 || lx < this.width || ly >= 0 || ly < this.height);
+    return (lx >= 0 && lx < this.width && ly >= 0 && ly < this.height);
+  }
+
+  globalPxIsVisible(gx, gy) {
+    const [tw, th] = this.screen.getTileSize();
+    const [lx, ly] = this.transformGlobalPxToLocalPx(gx, gy);
+    return (lx >= 0 && lx < (this.width * tw) && ly >= 0 && ly < (this.height * th));
   }
 
   getCenterTo(gx, gy) {

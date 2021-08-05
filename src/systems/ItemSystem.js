@@ -21,6 +21,7 @@ class ItemSystem extends System {
             bag: [...inventory.bag, collectable.item],
           });
           object.destroy();
+          this.messageQueue.enqueue({ type: 'ITEM_COLLECT', data: { item: object, subject } });
         }
       }
       if (message.type == 'ITEM_USE') {
