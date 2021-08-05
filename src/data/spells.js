@@ -1,3 +1,5 @@
+import { randomVectorOfRandomMagnitudeBetween } from 'core/utils/mathUtils';
+
 export default [
   {
     id: 'banishing',
@@ -14,9 +16,32 @@ export default [
       const fBonus = (focus / 100) * spell.focusBonus;
       return spell.strength * fBonus * willDelta;
     },
-    onCast: (spell, player, world) => {
+    onCast: (spell, player, world, effectManager) => {
       const stats = player.getOne('Stats');
       stats.update({ energy: stats.energy - spell.cost });
+      let particles;
+      effectManager.enqueueEffect({
+        removeAt: performance.now() + 500,
+        onEnqueue: () => {
+          particles = player.addComponent({
+            type: 'ParticleEmitter',
+            forces: [],
+            initialParticles: 50,
+            startingAcceleration: () => randomVectorOfRandomMagnitudeBetween(1,2),
+            maxParticles: 100,
+            initialParticles: 100,
+            particlesPerSecond: 50,
+            particleLife: 32,
+            maxVelocity: 2,
+            particleSize: [5, 1],
+            blendingMode: 'screen',
+            colors: ['#644089', '#D0C5DB'],
+          });
+        },
+        onRemove: () => {
+          player.removeComponent(particles);
+        }
+      });
       const { x, y } = player.getOne('Position');
       const enemies = Array.from(world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
       const nearby = enemies.filter(enemy => {

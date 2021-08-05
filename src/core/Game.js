@@ -59,7 +59,7 @@ class Game {
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
-    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue]);
+    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue, this.effectManager]);
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);

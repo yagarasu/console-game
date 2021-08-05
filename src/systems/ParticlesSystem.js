@@ -12,7 +12,12 @@ class ParticlesSystem extends System {
     this.camera = this.createQuery().fromAll('MainCamera', 'Viewport');
   }
 
-  createParticle(ttl, x, y) {
+  createParticle(ttl, x, y, startingAcceleration) {
+    let ax = 0, ay = 0;
+    if (startingAcceleration) {
+      ax = startingAcceleration[0];
+      ay = startingAcceleration[1];
+    }
     return {
       life: 0,
       lifePercent: 0,
@@ -21,8 +26,8 @@ class ParticlesSystem extends System {
       y,
       vx: 0,
       vy: 0,
-      ax: 0,
-      ay: 0,
+      ax,
+      ay,
     };
   }
 
@@ -69,6 +74,15 @@ class ParticlesSystem extends System {
     const particles = emitter.particles
       .map(particle => this.updateParticle(particle, emitter))
       .filter(({ life, ttl }) => life < ttl);
+    if (lastUpdated === 0) {
+      const {
+        initialParticles,
+        startingAcceleration
+      } = emitter;
+      for (let i = 0; i < initialParticles; i++) {
+        particles.push(this.createParticle(particleLife, x, y, startingAcceleration()));
+      }
+    }
     const newParticlesOnTick = Math.ceil(delta * particlesPerSecond);
     const newParticleCount = maxParticles - (particles.length + newParticlesOnTick)
     if (newParticleCount > 0) {

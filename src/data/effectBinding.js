@@ -11,7 +11,6 @@ export default [
         onEnqueue: () => {
           particles = subject.addComponent({
             type: 'ParticleEmitter',
-            lastUpdated: performance.now(),
             forces: [randomForce(3,5), airForce(-90, 1, 0)],
             maxParticles: 50,
             particlesPerSecond: 20,
@@ -39,8 +38,7 @@ export default [
         onEnqueue: () => {
           particles = object.addComponent({
             type: 'ParticleEmitter',
-            lastUpdated: performance.now(),
-            forces: [randomForce(5,10)],
+            forces: [randomForce(0.5,1)],
             maxParticles: 50,
             particlesPerSecond: 20,
             particleLife: 8,
