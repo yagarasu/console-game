@@ -1,4 +1,4 @@
-import airForce from 'systems/particleForces/airForce';
+import { airForce, randomForce } from 'systems/particleForces';
 
 export default function mainCamera(id, startingx, startingy) {
   return {
@@ -49,7 +49,6 @@ export default function mainCamera(id, startingx, startingy) {
       },
       {
         type: 'ParticleEmitter',
-        key: 'ParticleEmitter',
         lastUpdated: performance.now(),
         forces: [airForce(-90, 0.5, 0.5)],
         maxParticles: 50,

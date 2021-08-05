@@ -1,6 +1,6 @@
 import { System } from "ape-ecs";
 import { SYSTEM_GROUP_FRAME } from "systems/groups";
-import { clampVector, randomVectorOfRandomMagnitudeBetween } from "core/utils/mathUtils";
+import { clampVector } from "core/utils/mathUtils";
 
 class ParticlesSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
@@ -10,8 +10,6 @@ class ParticlesSystem extends System {
   }
 
   createParticle(ttl) {
-    // const [ax, ay] = randomVectorOfRandomMagnitudeBetween(0, 5);
-    // const [vx, vy] = randomVectorOfRandomMagnitudeBetween(0, 5);
     return {
       life: 0,
       lifePercent: 0,
@@ -54,8 +52,8 @@ class ParticlesSystem extends System {
     return newState;
   }
 
-  updateEmiter(tick, entity) {
-    const emitter = entity.getOne('ParticleEmitter');
+  updateEmiter(tick, entity, emitter) {
+    // const emitter = entity.getOne('ParticleEmitter');
     const {
       lastUpdated,
       maxParticles,
@@ -80,7 +78,10 @@ class ParticlesSystem extends System {
   update(tick) {
     const entities = this.entities.execute();
     for (const entity of entities) {
-      this.updateEmiter(tick, entity);
+      const emitters = entity.getComponents('ParticleEmitter');
+      for (const emitter of emitters) {
+        this.updateEmiter(tick, entity, emitter);
+      }
     }
   }
 }

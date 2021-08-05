@@ -155,19 +155,22 @@ class RenderSystem extends System {
       const emittery = (ly * tileHeight) + (tileHeight / 2);
       ctx.save();
       ctx.translate(emitterx, emittery);
-      const { particles, particleSize, colors, blendingMode } = entity.getOne('ParticleEmitter');
-      const [particleSizeMin, particleSizeMax] = particleSize;
-      for (const particle of particles) {
-        const { x: px, y: py, lifePercent } = particle;
-        const size = Math.round(lerp(particleSizeMin, particleSizeMax, lifePercent));
-        const color = Color.interpolate(Color.fromString(colors[0]), Color.fromString(colors[1]), lifePercent);
-        ctx.fillStyle = Color.toHex(color);
-        if (blendingMode) {
-          ctx.globalCompositeOperation = blendingMode;
+      const emitters = entity.getComponents('ParticleEmitter');
+      for (const emitter of emitters) {
+        const { particles, particleSize, colors, blendingMode } = emitter;
+        const [particleSizeMin, particleSizeMax] = particleSize;
+        for (const particle of particles) {
+          const { x: px, y: py, lifePercent } = particle;
+          const size = Math.round(lerp(particleSizeMin, particleSizeMax, lifePercent));
+          const color = Color.interpolate(Color.fromString(colors[0]), Color.fromString(colors[1]), lifePercent);
+          ctx.fillStyle = Color.toHex(color);
+          if (blendingMode) {
+            ctx.globalCompositeOperation = blendingMode;
+          }
+          ctx.beginPath();
+          ctx.arc(px, py, size, 0, Math.PI * 2);
+          ctx.fill();
         }
-        ctx.beginPath();
-        ctx.arc(px, py, size, 0, Math.PI * 2);
-        ctx.fill();
       }
       ctx.restore();
     }
