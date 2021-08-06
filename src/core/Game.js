@@ -25,6 +25,7 @@ import DungeonGenerator from 'core/Map/DungeonGenerator';
 import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
 import EffectManager from 'core/EffectManager';
+import SoundManager from 'core/SoundManager';
 import navKeyBinding from 'data/navKeyBinding';
 import menuKeyBinding from 'data/menuKeyBinding';
 import actionKeyBinding from 'data/actionKeyBinding';
@@ -46,6 +47,7 @@ class Game {
     this.mapManager = new MapManager();
     this.messageQueue = new MessageQueue();
     this.effectManager = new EffectManager(this.messageQueue, this.world);
+    this.soundManager = new SoundManager(this.messageQueue);
     this.hud = new HUDRenderer(this.screen, this.world);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
@@ -55,11 +57,12 @@ class Game {
 
   initialize() {
     this.screen.initialize();
+    this.soundManager.initialize();
 
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
-    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue, this.effectManager]);
+    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue, this.effectManager, this.soundManager]);
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);

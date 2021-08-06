@@ -16,7 +16,7 @@ export default [
       const fBonus = (focus / 100) * spell.focusBonus;
       return spell.strength * fBonus * willDelta;
     },
-    onCast: (spell, player, world, effectManager) => {
+    onCast: (spell, player, world, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
       stats.update({ energy: stats.energy - spell.cost });
       let particles;
@@ -42,6 +42,7 @@ export default [
           player.removeComponent(particles);
         }
       });
+      soundManager.play('choir', 'choir1');
       const { x, y } = player.getOne('Position');
       const enemies = Array.from(world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
       const nearby = enemies.filter(enemy => {
