@@ -1,4 +1,5 @@
 export { default as Position } from './Position';
+export { default as StartingPosition } from './StartingPosition';
 export { default as Movable } from './Movable';
 export { default as StaticSprite } from './rendering/StaticSprite';
 export { default as AnimatedSprite } from './rendering/AnimatedSprite';

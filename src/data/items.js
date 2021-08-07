@@ -5,5 +5,12 @@ export default [
       const stats = player.getOne('Stats');
       stats.update({ energy: stats.energy + 10 });
     }
+  },
+  {
+    id: 'consciousnessFragment',
+    onUse: (player) => {
+      const stats = player.getOne('Stats');
+      stats.update({ energy: stats.energy + 25 });
+    }
   }
 ];

@@ -10,6 +10,12 @@ export default function mainCamera(id, startingx, startingy) {
         y: startingy,
       },
       {
+        type: 'StartingPosition',
+        key: 'StartingPosition',
+        x: startingx,
+        y: startingy,
+      },
+      {
         type: 'StaticSprite',
         key: 'StaticSprite',
         ch: '\u263B',
