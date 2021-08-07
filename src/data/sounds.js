@@ -8,9 +8,11 @@ export default [
     file: hit,
     tags: ['sfx'],
     sprites: [
-      { id: 'hit1', start: 250, duration: 800 },
-      { id: 'hit2', start: 1000, duration: 2000 },
-      { id: 'hit3', start: 3000, duration: 1000 },
+      { id: 'hit1', start: 571, duration: 1029 },
+      { id: 'hit2', start: 2057, duration: 930  },
+      { id: 'hit3', start: 3477, duration: 1078 },
+      { id: 'hit4', start: 8179, duration: 1159 },
+      { id: 'hit5', start: 13926, duration: 1045 },
     ]
   },
   {
@@ -18,8 +20,10 @@ export default [
     file: choir,
     tags: ['sfx'],
     sprites: [
-      { id: 'choir1', start: 0, duration: 730 },
-      { id: 'choir2', start: 800, duration: 1800 },
+      { id: 'choir1', start: 48, duration: 941 },
+      { id: 'choir2', start: 987, duration: 755 },
+      { id: 'choir3', start: 2559, duration: 941 },
+      { id: 'choir4', start: 4030, duration: 1621 },
     ]
   },
   {
@@ -27,7 +31,7 @@ export default [
     file: monsterRoarAggressive,
     tags: ['sfx'],
     sprites: [
-      { id: 'roar2', start: 1000, duration: 1500 },
+      { id: 'dead', start: 5642, duration: 2261 },
     ]
   }
 ];

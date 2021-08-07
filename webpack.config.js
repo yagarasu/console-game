@@ -35,6 +35,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin(),
   ],
+  optimization: {
+    mangleExports: false,
+    minimize: false
+  },
   devServer: {
     port: 8000
   },

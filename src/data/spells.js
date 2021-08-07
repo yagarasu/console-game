@@ -1,4 +1,4 @@
-import { randomVectorOfRandomMagnitudeBetween } from 'core/utils/mathUtils';
+import { randomVectorOfRandomMagnitudeBetween, randomIntBetween } from 'core/utils/mathUtils';
 
 export default [
   {
@@ -42,7 +42,7 @@ export default [
           player.removeComponent(particles);
         }
       });
-      soundManager.play('choir', 'choir1');
+      soundManager.play('choir', 'choir' + randomIntBetween(1, 4));
       const { x, y } = player.getOne('Position');
       const enemies = Array.from(world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
       const nearby = enemies.filter(enemy => {
