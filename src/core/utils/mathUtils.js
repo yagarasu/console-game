@@ -10,6 +10,10 @@ export function randomIntBetween(min, max) {
   return Math.round(randomBetween(min, max));
 }
 
+export function successCheck(prob) {
+  return RNG.getUniform() <= prob;
+}
+
 export function randomNormalizedVector() {
   return [
     randomBetween(-1, 1),

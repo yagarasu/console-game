@@ -1,6 +1,7 @@
 import hit from 'assets/Skil_Saw_Hit_Body.mp3';
 import choir from 'assets/Angelical_Choir.mp3';
 import monsterRoarAggressive from 'assets/Monster_Roar_Aggressive.mp3';
+import thunder from 'assets/Thunder.mp3';
 
 export default [
   {
@@ -32,6 +33,14 @@ export default [
     tags: ['sfx'],
     sprites: [
       { id: 'dead', start: 5642, duration: 2261 },
+    ]
+  },
+  {
+    id: 'thunder',
+    file: thunder,
+    tags: ['sfx'],
+    sprites: [
+      { id: 'thunder', start: 318, duration: 1930 }
     ]
   }
 ];

@@ -38,6 +38,8 @@ export default function mainCamera(id, x, y) {
       {
         type: 'MobStats',
         key: 'MobStats',
+        energy: 50,
+        will: 10
       }
     ]
   };

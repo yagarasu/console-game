@@ -1,4 +1,5 @@
-import { randomVectorOfRandomMagnitudeBetween, randomIntBetween } from 'core/utils/mathUtils';
+import { randomVectorOfRandomMagnitudeBetween, randomIntBetween, successCheck } from 'core/utils/mathUtils';
+import { criticalHitProbByFocus } from 'core/utils/statUtils';
 
 export default [
   {
@@ -6,18 +7,18 @@ export default [
     name: 'Banishing',
     description: 'Force an entity to retreat',
     area: 3,
-    strength: 5,
+    strength: 10,
     cost: 3,
-    focusBonus: 1.5,
     calculateDamage: (player, enemy, spell) => {
       const { will, focus } = player.getOne('Stats');
       const { will: enemyWill } = enemy.getOne('MobStats');
       const willDelta = will / enemyWill;
-      const fBonus = (focus / 100) * spell.focusBonus;
-      return spell.strength * fBonus * willDelta;
+      return spell.strength * willDelta;
     },
     onCast: (spell, player, world, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
+      const { focus, maxFocus } = stats;
+      const critical = successCheck(criticalHitProbByFocus(focus / maxFocus));
       stats.update({ energy: stats.energy - spell.cost });
       let particles;
       effectManager.enqueueEffect({
@@ -26,10 +27,9 @@ export default [
           particles = player.addComponent({
             type: 'ParticleEmitter',
             forces: [],
-            initialParticles: 50,
+            initialParticles: critical ? 500 : 100,
             startingAcceleration: () => randomVectorOfRandomMagnitudeBetween(1,2),
-            maxParticles: 100,
-            initialParticles: 100,
+            maxParticles: critical ? 500 : 100,
             particlesPerSecond: 50,
             particleLife: 32,
             maxVelocity: 2,
@@ -42,6 +42,9 @@ export default [
           player.removeComponent(particles);
         }
       });
+      if (critical) {
+        soundManager.play('thunder', 'thunder');
+      }
       soundManager.play('choir', 'choir' + randomIntBetween(1, 4));
       const { x, y } = player.getOne('Position');
       const enemies = Array.from(world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
@@ -53,7 +56,8 @@ export default [
       nearby.forEach((enemy) => {
         const stats = enemy.getOne('MobStats');
         const damage = spell.calculateDamage(player, enemy, spell);
-        stats.update({ energy: stats.energy - damage });
+        const criticalBonus = critical ? 2 : 1;
+        stats.update({ energy: stats.energy - (damage * criticalBonus) });
       });
       console.log('BOOM!', nearby);
     }
