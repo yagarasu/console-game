@@ -1,7 +1,7 @@
 import { System } from "ape-ecs";
 import { FOV } from "rot-js";
 import { SYSTEM_GROUP_FRAME } from "systems/groups";
-
+import { visionStrengthByFocus } from 'core/utils/statUtils';
 
 class VisionSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
@@ -26,8 +26,15 @@ class VisionSystem extends System {
     for (const entity of entities) {
       const position = entity.getOne('Position');
       const vision = entity.getOne('Vision');
+      const stats = entity.getOne('Stats');
+      let sight = vision.sight;
+      if (stats) {
+        const { focus, maxFocus } = stats;
+        const visionStrength = visionStrengthByFocus(focus / maxFocus);
+        sight *= visionStrength;
+      }
       const newVisiondata = {};
-      this.fov.compute(position.x, position.y, vision.sight, (x, y, r, v) => {
+      this.fov.compute(position.x, position.y, sight, (x, y, r, v) => {
         newVisiondata[`${x},${y}`] = { r, v };
         if (v > 0.5) {
           mapData.setData(x, y, 'known', true);
