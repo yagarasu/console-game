@@ -18,9 +18,19 @@ class CastingSystem extends System {
         const player = this.world.getEntity('player');
         const { primary } = player.getOne('Equipment');
         const spell = spells.find(({ id }) => primary);
-        if (!spell) return next();
-        const { onCast } = spell;
-        onCast(spell, player, this.world, this.effectManager, this.soundManager);
+        if (spell) {
+          const { onCast } = spell;
+          onCast(spell, player, this.world, this.effectManager, this.soundManager);
+        }
+      }
+      if (message.type === 'CAST_SPELL_CMD') {
+        const player = this.world.getEntity('player');
+        const { data } = message;
+        const spell = spells.find(({ id }) => id == data.spellId);
+        if (spell) {
+          const { onCast } = spell;
+          onCast(spell, player, this.world, this.effectManager, this.soundManager);
+        }
       }
       next();
     };

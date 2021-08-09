@@ -28,7 +28,7 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'Vision',
         key: 'Vision',
-        sight: 10
+        sight: 7
       },
       {
         type: 'Stats',

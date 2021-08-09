@@ -61,5 +61,38 @@ export default [
       });
       console.log('BOOM!', nearby);
     }
+  },
+
+  {
+    id: 'breath',
+    name: 'Breath',
+    description: 'Refill focus',
+    onCast: (spell, player, world, effectManager, soundManager) => {
+      const stats = player.getOne('Stats');
+      stats.update({ focus: stats.focus + randomIntBetween(1, 10) });
+      let particles;
+      effectManager.enqueueEffect({
+        removeAt: performance.now() + 500,
+        onEnqueue: () => {
+          particles = player.addComponent({
+            type: 'ParticleEmitter',
+            forces: [],
+            initialParticles: 50,
+            startingAcceleration: () => randomVectorOfRandomMagnitudeBetween(1,2),
+            maxParticles: 50,
+            particlesPerSecond: 50,
+            particleLife: 32,
+            maxVelocity: 2,
+            particleSize: [5, 1],
+            blendingMode: 'screen',
+            colors: ['#771a98', '#f4d5ff'],
+          });
+        },
+        onRemove: () => {
+          player.removeComponent(particles);
+        }
+      });
+      soundManager.play('choir', 'choir' + randomIntBetween(1, 4));
+    }
   }
 ];

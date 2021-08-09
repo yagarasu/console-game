@@ -38,6 +38,7 @@ import player from 'entityTemplates/player';
 import mob from 'entityTemplates/mob';
 import portal from 'entityTemplates/portal';
 import halitus from 'entityTemplates/halitus';
+import sequenceBindings from "data/sequenceBindings";
 
 class Game {
   constructor() {
@@ -53,6 +54,7 @@ class Game {
     this.keyBinder.addBinding('nav', navKeyBinding);
     this.keyBinder.addBinding('menu', menuKeyBinding);
     this.keyBinder.addBinding('action', actionKeyBinding);
+    this.keyBinder.sequences = sequenceBindings;
   }
 
   initialize() {
