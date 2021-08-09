@@ -100,10 +100,7 @@ class PlayerMenu {
     drawBox(display, 0, 0, 20, 23);
     display.drawText(3, 1, '\u263F Inventory \u263F');
     const { bag } = this.player.getOne('InventoryHolder');
-    const itemNames = bag.map(({ name }) => name);
-    // const itemNames = [
-    //   'Foo'
-    // ];
+    const itemNames = bag.map(({ name, amount = 1 }) => name + ` (${amount})`);
     selectmenu(display, itemNames, this.selectMenuIdx, '\u25B6', '\u2022', 2, 3, 16, 3);
   }
 }
