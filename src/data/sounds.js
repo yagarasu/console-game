@@ -2,6 +2,7 @@ import hit from 'assets/Skil_Saw_Hit_Body.mp3';
 import choir from 'assets/Angelical_Choir.mp3';
 import monsterRoarAggressive from 'assets/Monster_Roar_Aggressive.mp3';
 import thunder from 'assets/Thunder.mp3';
+import chimes from 'assets/Wind_Chimes.mp3';
 
 export default [
   {
@@ -42,5 +43,15 @@ export default [
     sprites: [
       { id: 'thunder', start: 318, duration: 1930 }
     ]
+  },
+  {
+    id: 'chimes',
+    file: chimes,
+    tags: ['sfx'],
+    sprites: [
+      { id: 'chimes1', start: 1030, duration: 542 },
+      { id: 'chimes2', start: 1604, duration: 648 },
+      { id: 'chimes3', start: 2321, duration: 493 },
+    ],
   }
 ];

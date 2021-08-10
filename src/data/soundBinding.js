@@ -13,5 +13,11 @@ export default [
         play('monsterRoarAggr', 'dead');
       }
     },
+  },{
+    test: ({ type }) => type === 'ITEM_COLLECT',
+    run: (message, sounds, play) => {
+      play('chimes', 'chimes' + randomIntBetween(1,3));
+      // @TODO: Use different sounds for different items
+    }
   }
 ];
