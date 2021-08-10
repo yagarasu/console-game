@@ -29,14 +29,14 @@ export default [
   },
 
   {
-    test: ({ type }) => type === 'PROXIMITY_DAMAGE_EVT',
+    test: ({ type, data: { entity } }) => type === 'DAMAGE_CMD' && entity.id === 'player',
     buildEffect: ({ data }) => {
-      const { object } = data;
+      const { entity } = data;
       let particles = null;
       return {
         removeAt: performance.now() + 250,
         onEnqueue: () => {
-          particles = object.addComponent({
+          particles = entity.addComponent({
             type: 'ParticleEmitter',
             forces: [randomForce(0.5,1)],
             maxParticles: 50,
@@ -49,7 +49,7 @@ export default [
           });
         },
         onRemove: () => {
-          object.removeComponent(particles);
+          entity.removeComponent(particles);
         }
       };
     }

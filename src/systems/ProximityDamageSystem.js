@@ -14,13 +14,8 @@ class ProximityDamageSystem extends System {
       if (message.type == 'COLLISION_EVT') {
         const { subject, object } = message.data;
         if(subject.has('ProximityDamageInducer') && !subject.has('Dead') && object.has('Stats')) {
-          const { energyDamage, focusDamage } = subject.getOne('ProximityDamageInducer');
-          const stats = object.getOne('Stats');
-          stats.update({
-            energy: stats.energy - energyDamage,
-            focus: stats.focus - focusDamage,
-          });
-          this.messageQueue.enqueue({ type: 'PROXIMITY_DAMAGE_EVT', data: { subject, object, damage: { energyDamage, focusDamage } } });
+          const { damage } = subject.getOne('ProximityDamageInducer');
+          this.messageQueue.enqueue({ type: 'DAMAGE_CMD', data: { entity: object, agent: subject, damage } });
         }
       }
       next();

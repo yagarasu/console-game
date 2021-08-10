@@ -15,7 +15,7 @@ export default [
       const willDelta = will / enemyWill;
       return spell.strength * willDelta;
     },
-    onCast: (spell, player, world, effectManager, soundManager) => {
+    onCast: (spell, player, game, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
       const { focus, maxFocus } = stats;
       const critical = successCheck(criticalHitProbByFocus(focus / maxFocus));
@@ -47,19 +47,25 @@ export default [
       }
       soundManager.play('choir', 'choir' + randomIntBetween(1, 4));
       const { x, y } = player.getOne('Position');
-      const enemies = Array.from(world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
+      const enemies = Array.from(game.world.createQuery().fromAll('Enemy', 'Position').not('Dead').execute());
       const nearby = enemies.filter(enemy => {
         const { x: ex, y: ey } = enemy.getOne('Position');
         const d = Math.sqrt(((ex - x) * (ex - x)) + ((ey - y) * (ey - y)));
         return d < spell.area;
       });
       nearby.forEach((enemy) => {
-        const stats = enemy.getOne('MobStats');
         const damage = spell.calculateDamage(player, enemy, spell);
         const criticalBonus = critical ? 2 : 1;
-        stats.update({ energy: stats.energy - (damage * criticalBonus) });
+        game.messageQueue.enqueue({
+          type: 'DAMAGE_CMD',
+          data: {
+            entity: enemy,
+            agent: player,
+            spell,
+            damage: damage * criticalBonus,
+          }
+        });
       });
-      console.log('BOOM!', nearby);
     }
   },
 
@@ -67,7 +73,7 @@ export default [
     id: 'breath',
     name: 'Breath',
     description: 'Refill focus',
-    onCast: (spell, player, world, effectManager, soundManager) => {
+    onCast: (spell, player, game, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
       stats.update({ focus: clamp(stats.focus + randomIntBetween(1, 10), 0, stats.maxFocus) });
       let particles;

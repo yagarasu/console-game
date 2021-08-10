@@ -7,7 +7,7 @@ class Stats extends Component {
     focus: 100,
     maxFocus: 100,
     will: 40,
-    domain: 20,
+    dominion: 20,
     exp: 0,
     level: 1,
   }

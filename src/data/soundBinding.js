@@ -2,7 +2,7 @@ import { randomIntBetween } from 'core/utils/mathUtils';
 
 export default [
   {
-    test: ({ type }) => type === 'PROXIMITY_DAMAGE_EVT',
+    test: ({ type, data: { entity } }) => type === 'DAMAGE_CMD' && entity.id === 'player',
     run: (message, sounds) => sounds.hit.play('hit' + randomIntBetween(1,5)),
   },
   {

@@ -16,6 +16,7 @@ import {
   CollisionDetectorSystem,
   ProximityDamageSystem,
   CastingSystem,
+  DamageSystem,
   DeathSystem,
   ItemSystem,
   ParticlesSystem,
@@ -64,7 +65,7 @@ class Game {
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
-    this.world.registerSystem(CastingSystem.group, CastingSystem, [this.messageQueue, this.effectManager, this.soundManager]);
+    this.world.registerSystem(CastingSystem.group, CastingSystem, [this]);
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
@@ -73,6 +74,7 @@ class Game {
     this.world.registerSystem(CollisionDetectorSystem.group, CollisionDetectorSystem, [this.messageQueue]);
     this.world.registerSystem(ItemSystem.group, ItemSystem, [this.messageQueue]);
     this.world.registerSystem(ProximityDamageSystem.group, ProximityDamageSystem, [this.messageQueue]);
+    this.world.registerSystem(DamageSystem.group, DamageSystem, [this.messageQueue]);
     this.world.registerSystem(DeathSystem.group, DeathSystem, [this.messageQueue]);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);

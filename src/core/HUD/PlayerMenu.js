@@ -52,8 +52,8 @@ class PlayerMenu {
     if (this.currentMenu !== null) {
       // display menu
       const menus = {
-        PLAYER: this.renderPlayerMenu,
-        GRIMOIRE: this.renderGrimoireMenu,
+        PLAYER: this.renderPlayerMenu.bind(this),
+        GRIMOIRE: this.renderGrimoireMenu.bind(this),
         INVENTORY: this.renderInventoryMenu.bind(this),
       };
       const menu = menus[this.currentMenu];
@@ -87,18 +87,27 @@ class PlayerMenu {
   }
 
   renderPlayerMenu(display) {
-    display.drawText(0,0,'Player menu not ready yet');
+    const stats = this.player.getOne('Stats');
+    drawBox(display, 0, 0, 20, 23);
+    display.drawText(5, 1, '\u263F %c{#c00}Player%c{} \u263F');
+    display.drawText(2, 3, 'Lvl  ' + stats.level);
+    display.drawText(2, 4, 'Exp  ' + stats.exp);
+    display.drawText(2, 6, 'Will ' + stats.will);
+    display.drawText(2, 7, 'Dom  ' + stats.dominion);
+    display.drawText(2, 9, 'MaxFocus  ' + stats.maxFocus);
+    display.drawText(2, 10, 'MaxEnergy ' + stats.maxEnergy);
+    display.drawText(3, 12, '\u263F %c{#c00}Equipment%c{} \u263F');
   }
   
   renderGrimoireMenu(display) {
     drawBox(display, 0, 0, 20, 23);
-    display.drawText(5, 1, '\u263F Spells \u263F');
+    display.drawText(5, 1, '\u263F %c{#c00}Spells%c{} \u263F');
     display.drawText(2, 3, '\u269D Banish');
   }
 
   renderInventoryMenu(display) {
     drawBox(display, 0, 0, 20, 23);
-    display.drawText(3, 1, '\u263F Inventory \u263F');
+    display.drawText(3, 1, '\u263F %c{#c00}Inventory%c{} \u263F');
     const { bag } = this.player.getOne('InventoryHolder');
     const itemNames = bag.map(({ name, amount = 1 }) => name + ` (${amount})`);
     selectmenu(display, itemNames, this.selectMenuIdx, '\u25B6', '\u2022', 2, 3, 16, 3);
