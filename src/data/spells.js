@@ -1,4 +1,4 @@
-import { randomVectorOfRandomMagnitudeBetween, randomIntBetween, successCheck } from 'core/utils/mathUtils';
+import { randomVectorOfRandomMagnitudeBetween, randomIntBetween, successCheck, clamp } from 'core/utils/mathUtils';
 import { criticalHitProbByFocus } from 'core/utils/statUtils';
 
 export default [
@@ -69,7 +69,7 @@ export default [
     description: 'Refill focus',
     onCast: (spell, player, world, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
-      stats.update({ focus: stats.focus + randomIntBetween(1, 10) });
+      stats.update({ focus: clamp(stats.focus + randomIntBetween(1, 10), 0, stats.maxFocus) });
       let particles;
       effectManager.enqueueEffect({
         removeAt: performance.now() + 500,
