@@ -29,7 +29,7 @@ export default [
   },
 
   {
-    test: ({ type, data: { entity } }) => type === 'DAMAGE_CMD' && entity.id === 'player',
+    test: ({ type, data: { entity } = {} }) => type === 'DAMAGE_CMD' && entity.id === 'player',
     buildEffect: ({ data }) => {
       const { entity } = data;
       let particles = null;
