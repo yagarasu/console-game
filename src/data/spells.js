@@ -3,8 +3,9 @@ import { criticalHitProbByFocus } from 'core/utils/statUtils';
 
 export default [
   {
-    id: 'banishing',
-    name: 'Banishing',
+    id: 'banish',
+    name: 'Banish',
+    icon: '\u269D',
     description: 'Force an entity to retreat',
     area: 3,
     strength: 10,
@@ -19,6 +20,9 @@ export default [
       const stats = player.getOne('Stats');
       const { focus, maxFocus } = stats;
       const critical = successCheck(criticalHitProbByFocus(focus / maxFocus));
+      if ((stats.energy - spell.cost) < 0) {
+        return;
+      }
       stats.update({ energy: stats.energy - spell.cost });
       let particles;
       effectManager.enqueueEffect({

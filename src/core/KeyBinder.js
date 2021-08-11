@@ -48,6 +48,7 @@ class KeyBinder {
   }
 
   handleEvent(e) {
+    e.preventDefault();
     if (e.type === 'keydown') {
       this.pushKey(e.key);
       this.evalSequences();

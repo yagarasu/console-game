@@ -33,6 +33,7 @@ import actionKeyBinding from 'data/actionKeyBinding';
 import HUDRenderer from 'core/HUD/HUDRenderer';
 import EnergyGauge from 'core/HUD/EnergyGauge';
 import PlayerMenu from 'core/HUD/PlayerMenu';
+import Hotkeys from 'core/HUD/Hotkeys';
 
 import mainCamera from 'entityTemplates/mainCamera';
 import player from 'entityTemplates/player';
@@ -119,6 +120,7 @@ class Game {
 
     this.hud.addComponent('playerStats', new EnergyGauge(this.world.getEntity('player')));
     this.hud.addComponent('playerMenu', new PlayerMenu(this.messageQueue, this.world.getEntity('player')));
+    this.hud.addComponent('hotkeys', new Hotkeys(this.world.getEntity('player')));
 
     this.scheduler.addTask(() => {
       this.messageQueue.consume();

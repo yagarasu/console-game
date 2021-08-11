@@ -45,7 +45,8 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'Equipment',
         key: 'Equipment',
-        primary: 'banishing'
+        primary: 'banish',
+        secondary: 'banish'
       },
       {
         type: 'InventoryHolder',

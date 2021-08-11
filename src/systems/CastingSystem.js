@@ -15,10 +15,11 @@ class CastingSystem extends System {
 
   consumer() {
     return next => message => {
-      if (message.type === 'PRIMARY_ACTION_CMD') {
+      if (message.type === 'PRIMARY_ACTION_CMD' || message.type === 'SECONDARY_ACTION_CMD') {
         const player = this.world.getEntity('player');
-        const { primary } = player.getOne('Equipment');
-        const spell = spells.find(({ id }) => primary);
+        const { primary, secondary } = player.getOne('Equipment');
+        const equiped = message.type === 'PRIMARY_ACTION_CMD' ? primary : secondary;
+        const spell = spells.find(({ id }) => equiped);
         if (spell) {
           const { onCast } = spell;
           onCast(spell, player, this.game, this.effectManager, this.soundManager);
