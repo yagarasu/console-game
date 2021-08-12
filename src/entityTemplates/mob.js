@@ -1,4 +1,4 @@
-export default function mainCamera(id, x, y) {
+export default function mainCamera(id, x, y, color = '#6a9f9d', aiAlgo = 'fiend') {
   return {
     id,
     tags: ['FOVAlly', 'Enemy'],
@@ -13,7 +13,7 @@ export default function mainCamera(id, x, y) {
         type: 'StaticSprite',
         key: 'StaticSprite',
         ch: '\u263B',
-        fg: '#6a9f9d',
+        fg: color,
       },
       {
         type: 'Movable',
@@ -21,7 +21,7 @@ export default function mainCamera(id, x, y) {
       },
       {
         type: 'AI',
-        algorithm: 'fiend',
+        algorithm: aiAlgo,
         state: {
           tick: 0,
           cooldown: 16

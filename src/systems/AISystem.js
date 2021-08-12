@@ -5,14 +5,15 @@ import * as algorithms from './aiAlgorithms';
 class AISystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
-  init() {
+  init(game) {
+    this.game = game;
     this.entities = this.createQuery().fromAll('AI').not('Dead').persist();
   }
 
   runAlgorithm(algorithm, entity) {
     const fn = algorithms[algorithm];
     if (!fn) throw new Error(`Unknown AI Algorithm "${algorithm}"`);
-    return fn(entity);
+    return fn.call(this.game, entity);
   }
 
   update(tick) {

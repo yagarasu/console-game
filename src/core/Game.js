@@ -72,7 +72,7 @@ class Game {
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
     this.world.registerSystem(ProjectileSystem.group, ProjectileSystem, [this.messageQueue, this.scriptManager]);
     this.world.registerSystem(CastingSystem.group, CastingSystem, [this]);
-    this.world.registerSystem(AISystem.group, AISystem);
+    this.world.registerSystem(AISystem.group, AISystem, [this]);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
     this.world.registerSystem(MovementSystem.group, MovementSystem);
     this.world.registerSystem(ParticlesSystem.group, ParticlesSystem, [this.screen]);
@@ -118,6 +118,10 @@ class Game {
     for (let i = 0; i < 50; i++) {
       const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
       this.world.createEntity(mob('mob-' + i, mobx, moby));
+    }
+    for (let i = 0; i < 50; i++) {
+      const [mobx, moby] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
+      this.world.createEntity(mob('followmob-' + i, mobx, moby, '#112365', 'follower'));
     }
     for (let i = 0; i < 50; i++) {
       const [itemx, itemy] = DungeonGenerator.randomStartingPosition(this.mapManager.getMap());
