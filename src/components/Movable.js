@@ -4,6 +4,7 @@ class Movable extends Component {
   static properties = {
     dx: 0,
     dy: 0,
+    direction: 'down'
   }
 }
 

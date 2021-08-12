@@ -20,6 +20,8 @@ import {
   DeathSystem,
   ItemSystem,
   ParticlesSystem,
+  LifespanSystem,
+  ProjectileSystem,
 } from 'systems';
 import MapManager from 'core/Map/MapManager';
 import DungeonGenerator from 'core/Map/DungeonGenerator';
@@ -27,6 +29,7 @@ import MessageQueue from 'core/MessageQueue';
 import KeyBinder from 'core/KeyBinder';
 import EffectManager from 'core/EffectManager';
 import SoundManager from 'core/SoundManager';
+import ScriptManager from 'core/ScriptManager';
 import navKeyBinding from 'data/navKeyBinding';
 import menuKeyBinding from 'data/menuKeyBinding';
 import actionKeyBinding from 'data/actionKeyBinding';
@@ -51,6 +54,7 @@ class Game {
     this.messageQueue = new MessageQueue();
     this.effectManager = new EffectManager(this.messageQueue, this.world);
     this.soundManager = new SoundManager(this.messageQueue);
+    this.scriptManager = new ScriptManager(this);
     this.hud = new HUDRenderer(this.screen, this.world);
     this.keyBinder = new KeyBinder(this.messageQueue);
     this.keyBinder.addBinding('nav', navKeyBinding);
@@ -66,6 +70,7 @@ class Game {
     // Register systems
     this.world.registerSystem(CameraFollowSystem.group, CameraFollowSystem);
     this.world.registerSystem(MoveWithKeyboardSystem.group, MoveWithKeyboardSystem, [this.messageQueue]);
+    this.world.registerSystem(ProjectileSystem.group, ProjectileSystem, [this.messageQueue, this.scriptManager]);
     this.world.registerSystem(CastingSystem.group, CastingSystem, [this]);
     this.world.registerSystem(AISystem.group, AISystem);
     this.world.registerSystem(TilemapCollisionResolverSystem.group, TilemapCollisionResolverSystem);
@@ -77,6 +82,7 @@ class Game {
     this.world.registerSystem(ProximityDamageSystem.group, ProximityDamageSystem, [this.messageQueue]);
     this.world.registerSystem(DamageSystem.group, DamageSystem, [this.messageQueue]);
     this.world.registerSystem(DeathSystem.group, DeathSystem, [this.messageQueue]);
+    this.world.registerSystem(LifespanSystem.group, LifespanSystem);
     this.world.registerSystem(VisionSystem.group, VisionSystem);
     this.world.registerSystem(RenderSystem.group, RenderSystem, [this.screen]);
 

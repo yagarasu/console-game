@@ -22,6 +22,7 @@ class MoveWithKeyboardSystem extends System {
             case 'left': movable.dx = -1; break;
             case 'right': movable.dx = 1; break;
           }
+          movable.direction = message.data.direction;
           movable.update();
         }
       }

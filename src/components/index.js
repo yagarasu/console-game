@@ -17,3 +17,5 @@ export { default as Equipment } from './Equipment';
 export { default as InventoryHolder } from './InventoryHolder';
 export { default as Collectable } from './Collectable';
 export { default as ParticleEmitter } from './ParticleEmitter';
+export { default as Lifespan } from './Lifespan';
+export { default as Projectile } from './Projectile';

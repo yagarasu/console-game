@@ -1,5 +1,6 @@
 import { randomVectorOfRandomMagnitudeBetween, randomIntBetween, successCheck, clamp } from 'core/utils/mathUtils';
 import { criticalHitProbByFocus } from 'core/utils/statUtils';
+import flame from 'entityTemplates/flame';
 
 export default [
   {
@@ -9,7 +10,7 @@ export default [
     description: 'Force an entity to retreat',
     area: 3,
     strength: 10,
-    cost: 3,
+    cost: 10,
     calculateDamage: (player, enemy, spell) => {
       const { will, focus } = player.getOne('Stats');
       const { will: enemyWill } = enemy.getOne('MobStats');
@@ -76,6 +77,7 @@ export default [
   {
     id: 'breath',
     name: 'Breath',
+    icon: '\u269D',
     description: 'Refill focus',
     onCast: (spell, player, game, effectManager, soundManager) => {
       const stats = player.getOne('Stats');
@@ -103,6 +105,24 @@ export default [
         }
       });
       soundManager.play('choir', 'choir' + randomIntBetween(1, 4));
+    }
+  },
+
+  {
+    id: 'flame',
+    name: 'Flame',
+    icon: '\u269D',
+    description: 'Project your will as a flame of fire',
+    cost: 3,
+    onCast: (spell, player, game, effectManager, soundManager) => {
+      const stats = player.getOne('Stats');
+      if ((stats.energy - spell.cost) < 0) {
+        return;
+      }
+      stats.update({ energy: stats.energy - spell.cost });
+      const { direction } = player.getOne('Movable');
+      const { x, y } = player.getOne('Position');
+      game.world.createEntity(flame(x, y, direction));
     }
   }
 ];

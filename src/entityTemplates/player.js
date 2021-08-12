@@ -45,7 +45,7 @@ export default function mainCamera(id, startingx, startingy) {
       {
         type: 'Equipment',
         key: 'Equipment',
-        primary: 'banish',
+        primary: 'flame',
         secondary: 'banish'
       },
       {

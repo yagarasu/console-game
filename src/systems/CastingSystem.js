@@ -19,7 +19,7 @@ class CastingSystem extends System {
         const player = this.world.getEntity('player');
         const { primary, secondary } = player.getOne('Equipment');
         const equiped = message.type === 'PRIMARY_ACTION_CMD' ? primary : secondary;
-        const spell = spells.find(({ id }) => equiped);
+        const spell = spells.find(({ id }) => id == equiped);
         if (spell) {
           const { onCast } = spell;
           onCast(spell, player, this.game, this.effectManager, this.soundManager);

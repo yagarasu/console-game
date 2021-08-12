@@ -5,4 +5,6 @@ export default [
   'FOVAlly',
   'Enemy',
   'Dead',
+  'ReflectOnTileCollision',
+  'DestroyOnTileCollision',
 ];

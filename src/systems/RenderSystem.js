@@ -117,7 +117,7 @@ class RenderSystem extends System {
       const { x: gx, y: gy } = position;
       if (!camera.globalIsVisible(gx, gy)) continue;
       if (!sharedFov[`${gx},${gy}`] && !entity.has('FOVAlly')) continue;
-      const tileBg = map.getTile(gx, gy)?.bg;
+      const tileBg = map.getTile(gx, gy)?.bg ?? '#000';
       const [lx, ly] = camera.transformGlobalToLocal(gx, gy);
       const sprite = entity.getOne('AnimatedSprite');
       const { frames, currentFrame, ticks, frameDuration, fg, bg } = sprite;

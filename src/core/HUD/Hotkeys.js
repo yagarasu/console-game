@@ -9,8 +9,8 @@ class Hotkeys {
   render({ display }) {
     const equip = this.player.getOne('Equipment');
     const { primary, secondary } = equip;
-    const primarySpell = primary ? spells.find(({ id }) => primary) : null;
-    const secondarySpell = secondary ? spells.find(({ id }) => secondary) : null;
+    const primarySpell = primary ? spells.find(({ id }) => id == primary) : null;
+    const secondarySpell = secondary ? spells.find(({ id }) => id == secondary) : null;
     const primaryStr = primary ? `[%c{#3893b6}${primarySpell.icon} ${primarySpell.name}%c{#777}]` : '';
     const secondaryStr = secondary ? `[%c{#3893b6}${secondarySpell.icon} ${secondarySpell.name}%c{#777}]` : '';
     const hotkeys = `%c{#777}${primaryStr + secondaryStr}%c{}`;

@@ -8,7 +8,7 @@ class ParticleEmitter extends Component {
     lastUpdated: 0,
     maxParticles: 500,
     initialParticles: 0,
-    startingAcceleration: null,
+    startingAcceleration: () => () => [0,0],
     particlesPerSecond: 100,
     particleLife: 50,
     maxVelocity: 3,

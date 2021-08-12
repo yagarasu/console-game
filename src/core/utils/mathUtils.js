@@ -71,3 +71,31 @@ export function vectorFromAngle(angle) {
     Math.sin(angle * (TAU / 360))
   ];
 }
+
+export function angleFromVector(x, y) {
+  return Math.atan2(y, x) * (360 / TAU);
+}
+
+export function reflectVectorHorizontal(x, y) {
+  return [x * -1, y];
+}
+
+export function reflectVectorVertical(x, y) {
+  return [x, y * -1];
+}
+
+export function directionToVector(direction) {
+  switch (direction) {
+    case 'up': return [0, -1];
+    case 'down': return [0, 1];
+    case 'left': return [-1, 0];
+    case 'right': return [1, 0];
+  }
+}
+
+export function vectorToDirection(x, y) {
+  if (y < 0) return 'up';
+  if (y > 0) return 'down';
+  if (x < 0) return 'left';
+  if (x > 0) return 'right';
+}

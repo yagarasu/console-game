@@ -13,3 +13,5 @@ export { default as DamageSystem } from './DamageSystem';
 export { default as DeathSystem } from './DeathSystem';
 export { default as ItemSystem } from './ItemSystem';
 export { default as ParticlesSystem } from './ParticlesSystem';
+export { default as LifespanSystem } from './LifespanSystem';
+export { default as ProjectileSystem } from './ProjectileSystem';

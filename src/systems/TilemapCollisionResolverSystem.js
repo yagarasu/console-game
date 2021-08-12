@@ -1,11 +1,12 @@
 import { System } from "ape-ecs";
 import { SYSTEM_GROUP_FRAME } from "systems/groups";
+import { reflectVectorHorizontal, reflectVectorVertical } from 'core/utils/mathUtils';
 
 class TilemapCollisionResolverSystem extends System {
   static group = SYSTEM_GROUP_FRAME;
 
   init() {
-    this.target = this.createQuery().fromAll('Movable', 'Position');
+    this.target = this.createQuery().fromAll('Movable', 'Position').persist();
     this.map = this.createQuery().fromAll('Tilemap');
   }
 
@@ -20,10 +21,18 @@ class TilemapCollisionResolverSystem extends System {
       const futureY = position.y + movable.dy;
       const tile = map.getTile(futureX, futureY);
       if (!tile || tile.solid) {
-        movable.update({
-          dx: 0,
-          dy: 0,
-        });
+        if (target.has('DestroyOnTileCollision')) {
+          movable.update({
+            dx: 0,
+            dy: 0,
+          });
+          target.destroy();
+        } else {
+          movable.update({
+            dx: 0,
+            dy: 0,
+          });
+        }
       }
     }
   }
